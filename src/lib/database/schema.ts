@@ -1,0 +1,62 @@
+export const INITIALIZATION_SQL = [
+  `PRAGMA foreign_keys = ON;`,
+  `CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nip TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE,
+    passwordHash TEXT NOT NULL,
+    name TEXT NOT NULL,
+    role TEXT NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );`,
+  `CREATE TABLE IF NOT EXISTS login_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId INTEGER,
+    nip TEXT NOT NULL,
+    loginTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status TEXT,
+    FOREIGN KEY(userId) REFERENCES users(id) ON DELETE SET NULL
+  );`,
+  `CREATE TABLE IF NOT EXISTS data_rm (
+    nomorRm TEXT PRIMARY KEY,
+    namaPasien TEXT NOT NULL
+  );`,
+  `CREATE TABLE IF NOT EXISTS peminjaman (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tanggalPinjam DATETIME DEFAULT CURRENT_TIMESTAMP,
+    tanggalBerkasKeluar DATETIME,
+    peminjamId INTEGER NOT NULL,
+    unit TEXT NOT NULL,
+    nomorRm TEXT NOT NULL,
+    namaPasien TEXT NOT NULL,
+    jilid TEXT,
+    catatan TEXT,
+    status TEXT NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(peminjamId) REFERENCES users(id) ON DELETE RESTRICT,
+    FOREIGN KEY(nomorRm) REFERENCES data_rm(nomorRm) ON DELETE RESTRICT
+  );`,
+  `CREATE TABLE IF NOT EXISTS pengembalian (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    peminjamanId INTEGER UNIQUE NOT NULL,
+    tanggalBerkasKembali DATETIME DEFAULT CURRENT_TIMESTAMP,
+    dikembalikanOlehId INTEGER NOT NULL,
+    konfirmasiKembali BOOLEAN DEFAULT 0,
+    kondisiBerkas TEXT NOT NULL DEFAULT 'BAIK',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(peminjamanId) REFERENCES peminjaman(id) ON DELETE RESTRICT,
+    FOREIGN KEY(dikembalikanOlehId) REFERENCES users(id) ON DELETE RESTRICT
+  );`,
+  `CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL,
+    peminjamanId INTEGER NOT NULL,
+    message TEXT NOT NULL,
+    isRead BOOLEAN DEFAULT 0,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(peminjamanId) REFERENCES peminjaman(id) ON DELETE CASCADE
+  );`
+];
