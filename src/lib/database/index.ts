@@ -28,6 +28,24 @@ const DEVELOPMENT_RM_SEED = [
 
 let dbInstance: Database | null = null;
 
+async function ensureColumnExists(tableName: string, columnName: string, columnDefinition: string): Promise<void> {
+  const db = await getDb();
+  const columns = await db.select<{ name: string }[]>(`PRAGMA table_info(${tableName})`);
+
+  if (columns.some(column => column.name === columnName)) {
+    return;
+  }
+
+  try {
+    await db.execute(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!message.toLowerCase().includes("duplicate column name")) {
+      throw error;
+    }
+  }
+}
+
 export async function getDb(): Promise<Database> {
   if (!dbInstance) {
     dbInstance = await Database.load(DB_PATH);
@@ -44,10 +62,11 @@ export async function initializeDatabase(): Promise<void> {
       await db.execute(query);
     }
 
-    const returnColumns = await db.select<{ name: string }[]>("PRAGMA table_info(pengembalian)");
-    if (!returnColumns.some(column => column.name === "kondisiBerkas")) {
-      await db.execute("ALTER TABLE pengembalian ADD COLUMN kondisiBerkas TEXT NOT NULL DEFAULT 'BAIK'");
-    }
+    await ensureColumnExists("pengembalian", "kondisiBerkas", "TEXT NOT NULL DEFAULT 'BAIK'");
+    await ensureColumnExists("data_rm", "nik", "TEXT");
+    await ensureColumnExists("data_rm", "jenisKelamin", "TEXT");
+    await ensureColumnExists("data_rm", "tanggalLahir", "TEXT");
+    await ensureColumnExists("data_rm", "alamat", "TEXT");
 
     for (const [nomorRm, namaPasien] of DEVELOPMENT_RM_SEED) {
       await db.execute(

@@ -20,7 +20,11 @@ export const INITIALIZATION_SQL = [
   );`,
   `CREATE TABLE IF NOT EXISTS data_rm (
     nomorRm TEXT PRIMARY KEY,
-    namaPasien TEXT NOT NULL
+    namaPasien TEXT NOT NULL,
+    nik TEXT,
+    jenisKelamin TEXT,
+    tanggalLahir TEXT,
+    alamat TEXT
   );`,
   `CREATE TABLE IF NOT EXISTS peminjaman (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

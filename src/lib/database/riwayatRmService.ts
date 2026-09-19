@@ -3,6 +3,10 @@ import { getDb } from "./index";
 export interface DataRmInfo {
   nomorRm: string;
   namaPasien: string;
+  nik?: string | null;
+  jenisKelamin?: string | null;
+  tanggalLahir?: string | null;
+  alamat?: string | null;
 }
 
 export interface RiwayatTransaksiRow {
@@ -41,7 +45,7 @@ export async function getRiwayatByRm(nomorRm: string): Promise<RiwayatRmResult> 
   
   // 1. Cek Data RM
   const pasienResult = await db.select<DataRmInfo[]>(
-    "SELECT nomorRm, namaPasien FROM data_rm WHERE nomorRm = $1",
+    "SELECT nomorRm, namaPasien, nik, jenisKelamin, tanggalLahir, alamat FROM data_rm WHERE nomorRm = $1",
     [nomorRm]
   );
   
@@ -83,3 +87,25 @@ export async function getRiwayatByRm(nomorRm: string): Promise<RiwayatRmResult> 
     transaksi
   };
 }
+
+/**
+ * Menghapus data transaksi peminjaman (dan pengembalian jika ada) dari database
+ */
+export async function deletePeminjamanHistory(peminjamanId: number): Promise<void> {
+  const db = await getDb();
+  await db.execute("DELETE FROM pengembalian WHERE peminjamanId = $1", [peminjamanId]);
+  await db.execute("DELETE FROM notifications WHERE peminjamanId = $1", [peminjamanId]);
+  await db.execute("DELETE FROM peminjaman WHERE id = $1", [peminjamanId]);
+}
+
+/**
+ * Mengubah catatan/unit pada transaksi peminjaman
+ */
+export async function updatePeminjamanHistory(peminjamanId: number, unit: string, catatan: string | null): Promise<void> {
+  const db = await getDb();
+  await db.execute(
+    "UPDATE peminjaman SET unit = $1, catatan = $2, updatedAt = CURRENT_TIMESTAMP WHERE id = $3",
+    [unit, catatan, peminjamanId]
+  );
+}
+
