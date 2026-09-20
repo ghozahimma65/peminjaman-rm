@@ -55,6 +55,27 @@ export async function findActivePeminjamanByRm(nomorRm: string): Promise<Peminja
 export async function processPengembalian(peminjamanId: number, userId: number, kondisiBerkas: "BAIK" | "RUSAK" = "BAIK", tanggalBerkasKembali?: string): Promise<void> {
   const db = await getDb();
   const returnDate = tanggalBerkasKembali || new Date().toISOString();
+
+  // ── Validasi temporal: tanggal kembali tidak boleh lebih awal dari berkas keluar ──
+  {
+    const pinjamRows = await db.select<{ tanggalBerkasKeluar: string | null; tanggalPinjam: string }[]>(
+      "SELECT tanggalBerkasKeluar, tanggalPinjam FROM peminjaman WHERE id = $1",
+      [peminjamanId]
+    );
+    if (pinjamRows.length > 0) {
+      const referenceStr = pinjamRows[0].tanggalBerkasKeluar || pinjamRows[0].tanggalPinjam;
+      const referenceDate = new Date(referenceStr);
+      const returnDateObj = new Date(returnDate);
+      if (!Number.isNaN(referenceDate.getTime()) && !Number.isNaN(returnDateObj.getTime())) {
+        if (returnDateObj < referenceDate) {
+          const label = pinjamRows[0].tanggalBerkasKeluar ? "tanggal/jam berkas keluar" : "tanggal pinjam";
+          throw new Error(
+            `Tanggal pengembalian tidak valid: waktu kembali (${returnDateObj.toLocaleString("id-ID")}) tidak boleh lebih awal dari ${label} (${referenceDate.toLocaleString("id-ID")}).`
+          );
+        }
+      }
+    }
+  }
   let insertedReturnId: number | null = null;
 
   try {

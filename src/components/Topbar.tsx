@@ -4,6 +4,7 @@ import { User } from "../types";
 import { NotificationPanel } from "./NotificationPanel";
 import { MENU_ITEMS } from "../constants";
 import { syncNotifications, getUnreadCount } from "../lib/database/notificationService";
+import { getAvatarDisplayUrl } from "../lib/auth/avatarService";
 
 interface TopbarProps {
   user: User;
@@ -16,7 +17,22 @@ export function Topbar({ user, activePage, onNavigate, onLogoutClick }: TopbarPr
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showProfile, setShowProfile] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadAvatar() {
+      if (user.avatarPath) {
+        const url = await getAvatarDisplayUrl(user.avatarPath);
+        if (isMounted) setAvatarUrl(url);
+      } else {
+        if (isMounted) setAvatarUrl(null);
+      }
+    }
+    loadAvatar();
+    return () => { isMounted = false; };
+  }, [user.avatarPath]);
 
   const fetchUnread = async () => {
     try {
@@ -62,6 +78,23 @@ export function Topbar({ user, activePage, onNavigate, onLogoutClick }: TopbarPr
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const renderAvatar = (sizeClass = "h-8 w-8", textClass = "text-xs") => {
+    if (avatarUrl) {
+      return (
+        <img
+          src={avatarUrl}
+          alt={user.name}
+          className={`${sizeClass} rounded-full object-cover border border-slate-300`}
+        />
+      );
+    }
+    return (
+      <div className={`flex ${sizeClass} items-center justify-center rounded-full bg-slate-800 ${textClass} font-bold text-white shrink-0`}>
+        {user.name.charAt(0).toUpperCase()}
+      </div>
+    );
+  };
+
   return (
     <header className="flex h-[58px] shrink-0 items-center justify-between border-b border-slate-200 bg-slate-50 px-5 sm:px-7">
       {activePage === "dashboard" ? (
@@ -90,14 +123,17 @@ export function Topbar({ user, activePage, onNavigate, onLogoutClick }: TopbarPr
         </div>
 
         <div className="relative">
-          <button type="button" className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-white" onClick={() => setShowProfile(value => !value)} title="Buka profil">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">{user.name.charAt(0).toUpperCase()}</div>
+          <button type="button" className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-white cursor-pointer" onClick={() => setShowProfile(value => !value)} title="Buka profil">
+            {renderAvatar("h-8 w-8", "text-xs")}
             <div className="hidden text-left sm:block"><span className="block text-[10px] font-semibold text-slate-800">{user.name}</span><span className="block text-[9px] text-slate-500">{user.role}</span></div><Icons.ChevronDown />
           </button>
           {showProfile && <div className="absolute right-0 top-11 z-50 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
-            <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-4"><div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-900 text-xs font-bold text-white">{user.name.charAt(0).toUpperCase()}</div><div><p className="text-[11px] font-semibold text-slate-800">{user.name}</p><p className="text-[9px] text-slate-500">{user.role} <span className="text-emerald-600">• Online</span></p></div></div>
-            <button type="button" className="flex w-full items-center gap-2 px-4 py-3 text-left text-[10px] text-slate-700 hover:bg-slate-50" onClick={() => { setShowProfile(false); onNavigate("profil"); }}><Icons.User />Lihat Profil Saya</button>
-            <button type="button" className="flex w-full items-center gap-2 border-t border-slate-100 px-4 py-3 text-left text-[10px] text-red-600 hover:bg-red-50" onClick={onLogoutClick}><Icons.Logout />Logout</button>
+            <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-4">
+              {renderAvatar("h-9 w-9", "text-xs")}
+              <div><p className="text-[11px] font-semibold text-slate-800">{user.name}</p><p className="text-[9px] text-slate-500">{user.role} <span className="text-emerald-600">• Online</span></p></div>
+            </div>
+            <button type="button" className="flex w-full items-center gap-2 px-4 py-3 text-left text-[10px] text-slate-700 hover:bg-slate-50 cursor-pointer" onClick={() => { setShowProfile(false); onNavigate("profil"); }}><Icons.User />Lihat Profil Saya</button>
+            <button type="button" className="flex w-full items-center gap-2 border-t border-slate-100 px-4 py-3 text-left text-[10px] text-red-600 hover:bg-red-50 cursor-pointer" onClick={onLogoutClick}><Icons.Logout />Logout</button>
           </div>}
         </div>
       </div>

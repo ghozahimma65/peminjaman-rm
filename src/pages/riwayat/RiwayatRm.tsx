@@ -8,6 +8,7 @@ import {
   RiwayatTransaksiRow,
   updatePeminjamanHistory,
 } from "../../lib/database/riwayatRmService";
+import { calculateEffectiveStatus } from "../../lib/statusHelper";
 
 function formatDate(value?: string | null) {
   if (!value) return "-";
@@ -56,15 +57,13 @@ function statusBadgeColor(status: string) {
 }
 
 function deriveStatus(transaction: RiwayatTransaksiRow) {
-  if (transaction.statusPeminjaman === "DIKEMBALIKAN") {
-    return "Tepat Waktu";
-  }
-
-  if (transaction.tanggalBerkasKeluar) {
-    const due = new Date(transaction.tanggalBerkasKeluar);
-    if (!Number.isNaN(due.getTime()) && new Date() > due) return "Terlambat";
-  }
-
+  const status = calculateEffectiveStatus(
+    transaction.tanggalBerkasKeluar,
+    transaction.tanggalPinjam,
+    transaction.tanggalBerkasKembali
+  );
+  if (status === "TERLAMBAT") return "Terlambat";
+  if (status === "DIKEMBALIKAN") return "Tepat Waktu";
   return "Dipinjam";
 }
 

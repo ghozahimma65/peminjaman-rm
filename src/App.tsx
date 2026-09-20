@@ -5,6 +5,7 @@ import { User } from "./types";
 import { MENU_ITEMS } from "./constants";
 import { Portal } from "./pages/Portal";
 import { Login } from "./pages/Login";
+import { Register } from "./pages/Register";
 import { Layout } from "./components/Layout";
 import { Dashboard } from "./pages/Dashboard";
 import { LogLogin } from "./pages/LogLogin";
@@ -29,6 +30,7 @@ function AppContent() {
   const [activePage, setActivePage] = useState("dashboard");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const [prefillRm, setPrefillRm] = useState("");
   
   const [dbReady, setDbReady] = useState(false);
@@ -70,8 +72,21 @@ function AppContent() {
   }
 
   if (!user) {
+    if (showRegister) {
+      return (
+        <Register 
+          onBackToLogin={() => setShowRegister(false)} 
+          onRegisterSuccess={() => setShowRegister(false)} 
+        />
+      );
+    }
     if (showLogin) {
-      return <Login onLogin={handleLoginSuccess} />;
+      return (
+        <Login 
+          onLogin={handleLoginSuccess} 
+          onRegisterClick={() => setShowRegister(true)} 
+        />
+      );
     }
     return <Portal onEnter={() => setShowLogin(true)} />;
   }
@@ -113,7 +128,12 @@ function AppContent() {
   };
 
   // Convert SessionUser to compatible User type for Layout
-  const layoutUser: User = { username: user.nip, name: user.name, role: user.role };
+  const layoutUser: User = { 
+    username: user.nip, 
+    name: user.name, 
+    role: user.role, 
+    avatarPath: user.avatarPath 
+  };
 
   return (
     <>

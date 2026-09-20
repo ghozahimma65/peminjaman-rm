@@ -7,6 +7,7 @@ export const INITIALIZATION_SQL = [
     passwordHash TEXT NOT NULL,
     name TEXT NOT NULL,
     role TEXT NOT NULL,
+    avatarPath TEXT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );`,

@@ -59,15 +59,22 @@ export function NotificationPanel({ onClose, onNavigate, onRead }: NotificationP
           <div style={{ padding: '16px', textAlign: 'center', color: '#6b7280' }}>Belum ada notifikasi.</div>
         ) : (
           notifications.map(notif => (
-            <div 
-              key={notif.id} 
+            <div
+              key={notif.id}
+              role="button"
+              tabIndex={0}
+              title="Klik untuk membuka Daftar Peminjaman"
               className={`notification-item ${notif.type === 'TERLAMBAT' ? 'danger' : 'warning'}`}
-              style={{ 
-                opacity: notif.isRead ? 0.6 : 1, 
+              style={{
+                opacity: notif.isRead ? 0.6 : 1,
                 cursor: 'pointer',
-                borderLeft: notif.isRead ? '4px solid #d1d5db' : (notif.type === 'TERLAMBAT' ? '4px solid #ef4444' : '4px solid #f59e0b')
+                borderLeft: notif.isRead ? '4px solid #d1d5db' : (notif.type === 'TERLAMBAT' ? '4px solid #ef4444' : '4px solid #f59e0b'),
+                transition: 'background 0.15s',
               }}
               onClick={() => handleNotificationClick(notif)}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleNotificationClick(notif); }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = '#f8fafc'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = ''; }}
             >
               <div className="notification-icon">
                 <Icons.AlertCircle />

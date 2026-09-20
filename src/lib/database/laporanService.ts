@@ -1,4 +1,5 @@
 import { getDb } from "./index";
+import { calculateEffectiveStatus } from "../statusHelper";
 
 export interface LaporanRow {
   id: number;
@@ -36,7 +37,7 @@ export async function getLaporanData(filters: LaporanFilter): Promise<LaporanRow
     SELECT 
       p.id, p.nomorRm, p.namaPasien, p.tanggalPinjam, p.tanggalBerkasKeluar, 
       p.unit, p.jilid,
-      CASE WHEN k.id IS NOT NULL THEN 'DIKEMBALIKAN' ELSE p.status END as status,
+      p.status as baseStatus,
       u1.name as peminjamName,
       k.tanggalBerkasKembali, 
       u2.name as pengembaliName
@@ -55,11 +56,6 @@ export async function getLaporanData(filters: LaporanFilter): Promise<LaporanRow
     params.push(filters.unit);
   }
 
-  if (filters.status && filters.status !== 'Semua') {
-    query += ` AND p.status = $${paramIdx++}`;
-    params.push(filters.status);
-  }
-
   if (filters.startDate) {
     query += ` AND date(p.tanggalPinjam) >= date($${paramIdx})`;
     params.push(filters.startDate);
@@ -73,5 +69,103 @@ export async function getLaporanData(filters: LaporanFilter): Promise<LaporanRow
 
   query += ` ORDER BY p.tanggalPinjam DESC`;
 
-  return await db.select<LaporanRow[]>(query, params);
+  const rows = await db.select<(LaporanRow & { baseStatus?: string })[]>(query, params);
+  
+  let mapped = rows.map(r => ({
+    ...r,
+    status: calculateEffectiveStatus(r.tanggalBerkasKeluar, r.tanggalPinjam, r.tanggalBerkasKembali)
+  }));
+
+  if (filters.status && filters.status !== 'Semua') {
+    mapped = mapped.filter(r => r.status === filters.status);
+  }
+
+  return mapped;
 }
+
+export interface TabelRekapitulasiRuang {
+  no: number;
+  unit: string;
+  jumlahDipinjam: number;
+  jumlahDikembalikan: number;
+  belumDikembalikan: number;
+  tepatWaktu: number;
+  terlambat: number;
+  keterangan: string;
+}
+
+export interface TabelStatusBerkas {
+  no: number;
+  statusBerkas: string;
+  jumlah: number;
+}
+
+export function computeSummaryTables(data: LaporanRow[]) {
+  const roomMap = new Map<string, {
+    dipinjam: number;
+    dikembalikan: number;
+    belumDikembalikan: number;
+    tepatWaktu: number;
+    terlambat: number;
+  }>();
+
+  for (const row of data) {
+    const room = row.unit || "Lainnya";
+    if (!roomMap.has(room)) {
+      roomMap.set(room, { dipinjam: 0, dikembalikan: 0, belumDikembalikan: 0, tepatWaktu: 0, terlambat: 0 });
+    }
+    const stat = roomMap.get(room)!;
+    stat.dipinjam += 1;
+    if (row.status === "DIKEMBALIKAN") {
+      stat.dikembalikan += 1;
+      stat.tepatWaktu += 1;
+    } else if (row.status === "TERLAMBAT") {
+      if (row.tanggalBerkasKembali) {
+        stat.dikembalikan += 1;
+      } else {
+        stat.belumDikembalikan += 1;
+      }
+      stat.terlambat += 1;
+    } else {
+      stat.belumDikembalikan += 1;
+      stat.tepatWaktu += 1;
+    }
+  }
+
+  const tabelRuang: TabelRekapitulasiRuang[] = Array.from(roomMap.entries()).map(([unit, stat], idx) => ({
+    no: idx + 1,
+    unit,
+    jumlahDipinjam: stat.dipinjam,
+    jumlahDikembalikan: stat.dikembalikan,
+    belumDikembalikan: stat.belumDikembalikan,
+    tepatWaktu: stat.tepatWaktu,
+    terlambat: stat.terlambat,
+    keterangan: "-"
+  }));
+
+  const totalRuang: TabelRekapitulasiRuang = {
+    no: 0,
+    unit: "Total",
+    jumlahDipinjam: tabelRuang.reduce((s, r) => s + r.jumlahDipinjam, 0),
+    jumlahDikembalikan: tabelRuang.reduce((s, r) => s + r.jumlahDikembalikan, 0),
+    belumDikembalikan: tabelRuang.reduce((s, r) => s + r.belumDikembalikan, 0),
+    tepatWaktu: tabelRuang.reduce((s, r) => s + r.tepatWaktu, 0),
+    terlambat: tabelRuang.reduce((s, r) => s + r.terlambat, 0),
+    keterangan: "-"
+  };
+
+  const totalDipinjam = totalRuang.jumlahDipinjam;
+  const totalDikembalikan = totalRuang.jumlahDikembalikan;
+  const totalTerlambat = totalRuang.terlambat;
+
+  const tabelStatus: TabelStatusBerkas[] = [
+    { no: 1, statusBerkas: "Berkas telah dipinjam", jumlah: totalDipinjam },
+    { no: 2, statusBerkas: "Berkas telah dikembalikan", jumlah: totalDikembalikan },
+    { no: 3, statusBerkas: "Berkas terlambat dikembalikan", jumlah: totalTerlambat }
+  ];
+
+  const totalStatusCount = tabelStatus.reduce((s, r) => s + r.jumlah, 0);
+
+  return { tabelRuang, totalRuang, tabelStatus, totalStatusCount };
+}
+

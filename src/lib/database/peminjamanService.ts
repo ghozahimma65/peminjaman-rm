@@ -1,4 +1,5 @@
 import { getDb } from "./index";
+import { calculateEffectiveStatus } from "../statusHelper";
 
 export interface PeminjamanRow {
   id?: number;
@@ -61,25 +62,21 @@ export async function createPeminjaman(data: Omit<PeminjamanRow, 'id' | 'created
 
 export async function getAllPeminjaman(): Promise<PeminjamanRow[]> {
   const db = await getDb();
-  try {
-    return await db.select<PeminjamanRow[]>(
-      `SELECT p.id, p.tanggalPinjam, p.tanggalBerkasKeluar, p.peminjamId,
-        p.unit, p.nomorRm, p.namaPasien, p.jilid, p.catatan,
-        p.createdAt, p.updatedAt,
-        CASE WHEN EXISTS (SELECT 1 FROM pengembalian pg WHERE pg.peminjamanId = p.id)
-             THEN 'DIKEMBALIKAN' ELSE p.status END as status,
-        u.name as peminjamName
-       FROM peminjaman p
-       LEFT JOIN users u ON p.peminjamId = u.id
-       ORDER BY p.tanggalPinjam DESC`,
-    );
-  } catch (error) {
-    console.warn("[Peminjaman] Effective status query failed, using base query:", error);
-    return db.select<PeminjamanRow[]>(
-      `SELECT p.*, u.name as peminjamName
-       FROM peminjaman p
-       LEFT JOIN users u ON p.peminjamId = u.id
-       ORDER BY p.tanggalPinjam DESC`,
-    );
-  }
+  const rows = await db.select<(PeminjamanRow & { tanggalBerkasKembali?: string | null })[]>(
+    `SELECT p.id, p.tanggalPinjam, p.tanggalBerkasKeluar, p.peminjamId,
+      p.unit, p.nomorRm, p.namaPasien, p.jilid, p.catatan,
+      p.createdAt, p.updatedAt,
+      pg.tanggalBerkasKembali,
+      u.name as peminjamName
+     FROM peminjaman p
+     LEFT JOIN pengembalian pg ON pg.peminjamanId = p.id
+     LEFT JOIN users u ON p.peminjamId = u.id
+     ORDER BY p.tanggalPinjam DESC`,
+  );
+
+  return rows.map(r => ({
+    ...r,
+    status: calculateEffectiveStatus(r.tanggalBerkasKeluar, r.tanggalPinjam, r.tanggalBerkasKembali)
+  }));
 }
+

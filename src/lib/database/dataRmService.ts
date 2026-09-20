@@ -10,6 +10,16 @@ export interface DataRmRow {
 }
 
 /**
+ * Validasi NIK: Wajib tepat 16 digit angka, tanpa huruf, spasi, atau simbol.
+ */
+export function validateNik(nik: string): void {
+  const trimmed = nik.trim();
+  if (!/^\d{16}$/.test(trimmed)) {
+    throw new Error("NIK wajib terdiri dari tepat 16 digit angka (tanpa huruf, spasi, atau simbol).");
+  }
+}
+
+/**
  * Menambahkan data pasien baru ke master data RM
  */
 export async function createDataRm(
@@ -20,6 +30,7 @@ export async function createDataRm(
   tanggalLahir: string,
   alamat: string,
 ): Promise<void> {
+  validateNik(nik);
   const db = await getDb();
   await db.execute(
     "INSERT INTO data_rm (nomorRm, namaPasien, nik, jenisKelamin, tanggalLahir, alamat) VALUES ($1, $2, $3, $4, $5, $6)",

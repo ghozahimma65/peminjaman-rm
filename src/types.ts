@@ -4,6 +4,7 @@ export type User = {
   username: string;
   name: string;
   role: string;
+  avatarPath?: string | null;
 };
 
 export type LoginLog = {

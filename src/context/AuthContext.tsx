@@ -29,10 +29,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const s = await load("session.bin");
         setStore(s);
-        
-        const savedUser = await s.get<SessionUser>("user_session");
-        if (savedUser) {
-          setUserState(savedUser);
+
+        // INTENTIONALLY do NOT restore session on startup.
+        // Every app launch must begin at the Portal page.
+        // Clear any previously saved session so the store stays clean.
+        const had = await s.get<SessionUser>("user_session");
+        if (had) {
+          await s.delete("user_session");
+          await s.save();
         }
       } catch (err) {
         console.error("Failed to load session store:", err);

@@ -28,15 +28,29 @@ export function Modal({
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-[2px]" onMouseDown={onClose}>
-      <div className="w-full max-w-[350px] rounded-[26px] bg-white px-7 py-7 shadow-[0_22px_50px_rgba(15,23,42,0.18)]" onMouseDown={event => event.stopPropagation()}>
-        <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-white shadow-sm ${iconClass}`}>
-          {isLogout ? <Icons.Logout /> : isReturn || isDownload ? <Icons.Pengembalian /> : isDanger ? <Icons.AlertCircle /> : <Icons.User />}
+      <div
+        className="flex w-full max-w-[400px] flex-col rounded-[26px] bg-white shadow-[0_22px_50px_rgba(15,23,42,0.18)]"
+        style={{ maxHeight: "90vh" }}
+        onMouseDown={event => event.stopPropagation()}
+      >
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto px-7 pt-7">
+          <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-white shadow-sm ${iconClass}`}>
+            {isLogout ? <Icons.Logout /> : isReturn || isDownload ? <Icons.Pengembalian /> : isDanger ? <Icons.AlertCircle /> : <Icons.User />}
+          </div>
+          <h3 className="mt-6 text-center text-[22px] font-bold leading-tight text-slate-900">{title}</h3>
+          {description && (
+            <div className="mx-auto mt-3 w-full text-center text-[14px] leading-6 text-slate-500">
+              {description}
+            </div>
+          )}
         </div>
-        <h3 className="mt-6 text-center text-[22px] font-bold leading-tight text-slate-900">{title}</h3>
-        {description && <div className="mx-auto mt-2 max-w-[270px] text-center text-[15px] leading-6 text-slate-500">{description}</div>}
-        <div className="mt-7 flex flex-col gap-3">
-          <button type="button" className={confirmClass} onClick={onConfirm} disabled={isLoading}>{isLoading ? "Memproses..." : confirmText}</button>
-          <button type="button" className={cancelClass} onClick={onClose} disabled={isLoading}>{cancelText}</button>
+        {/* Sticky footer — always visible */}
+        <div className="shrink-0 px-7 pb-7 pt-4">
+          <div className="flex flex-col gap-3 border-t border-slate-100 pt-4">
+            <button type="button" className={confirmClass} onClick={onConfirm} disabled={isLoading}>{isLoading ? "Memproses..." : confirmText}</button>
+            <button type="button" className={cancelClass} onClick={onClose} disabled={isLoading}>{cancelText}</button>
+          </div>
         </div>
       </div>
     </div>

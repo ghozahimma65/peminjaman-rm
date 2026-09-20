@@ -11,6 +11,18 @@
     "sql:allow-select",
     "sql:allow-close",
     "sql:allow-load",
-    "store:default"
+    "store:default",
+    "dialog:default",
+    "dialog:allow-save",
+    "fs:default",
+    "fs:allow-mkdir",
+    "fs:allow-write-file",
+    "fs:allow-read-file",
+    "fs:allow-exists",
+    "fs:allow-remove",
+    "fs:scope-appdata-recursive",
+    "fs:scope-download-recursive",
+    "fs:scope-desktop-recursive",
+    "fs:scope-document-recursive"
   ]
 }

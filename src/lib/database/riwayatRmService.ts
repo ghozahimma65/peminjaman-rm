@@ -1,4 +1,5 @@
 import { getDb } from "./index";
+import { calculateEffectiveStatus } from "../statusHelper";
 
 export interface DataRmInfo {
   nomorRm: string;
@@ -65,7 +66,7 @@ export async function getRiwayatByRm(nomorRm: string): Promise<RiwayatRmResult> 
       p.jilid,
       p.catatan,
       pg.kondisiBerkas,
-      CASE WHEN pg.id IS NOT NULL THEN 'DIKEMBALIKAN' ELSE p.status END as statusPeminjaman,
+      p.status as baseStatus,
       p.peminjamId,
       u1.name as peminjamName,
       pg.id as pengembalianId,
@@ -80,7 +81,11 @@ export async function getRiwayatByRm(nomorRm: string): Promise<RiwayatRmResult> 
     ORDER BY p.tanggalPinjam DESC
   `;
   
-  const transaksi = await db.select<RiwayatTransaksiRow[]>(query, [nomorRm]);
+  const rawRows = await db.select<RiwayatTransaksiRow[]>(query, [nomorRm]);
+  const transaksi = rawRows.map(t => ({
+    ...t,
+    statusPeminjaman: calculateEffectiveStatus(t.tanggalBerkasKeluar, t.tanggalPinjam, t.tanggalBerkasKembali)
+  }));
 
   return {
     pasien,

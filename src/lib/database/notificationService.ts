@@ -1,4 +1,5 @@
 import { getDb } from "./index";
+import { calculateDeadline } from "../statusHelper";
 
 export interface NotificationRow {
   id: number;
@@ -20,20 +21,24 @@ export async function syncNotifications(): Promise<void> {
   await db.execute(
     `DELETE FROM notifications WHERE peminjamanId IN (
       SELECT id FROM peminjaman WHERE status = 'DIKEMBALIKAN'
+        OR EXISTS (SELECT 1 FROM pengembalian WHERE pengembalian.peminjamanId = peminjaman.id)
     )`
   );
 
-  // Cari peminjaman yang masih aktif (DIPINJAM atau TERLAMBAT) dan sudah keluar
-  const aktifPeminjaman = await db.select<{ id: number, nomorRm: string, tanggalBerkasKeluar: string, status: string }[]>(
-    `SELECT id, nomorRm, tanggalBerkasKeluar, status FROM peminjaman WHERE status IN ('DIPINJAM', 'TERLAMBAT') AND tanggalBerkasKeluar IS NOT NULL`
+  // Cari peminjaman yang masih aktif (DIPINJAM atau TERLAMBAT)
+  const aktifPeminjaman = await db.select<{ id: number, nomorRm: string, tanggalBerkasKeluar: string | null, tanggalPinjam: string, status: string }[]>(
+    `SELECT id, nomorRm, tanggalBerkasKeluar, tanggalPinjam, status FROM peminjaman 
+     WHERE status IN ('DIPINJAM', 'TERLAMBAT')
+       AND NOT EXISTS (SELECT 1 FROM pengembalian WHERE pengembalian.peminjamanId = peminjaman.id)`
   );
 
   const now = new Date().getTime();
 
   for (const p of aktifPeminjaman) {
-    if (!p.tanggalBerkasKeluar) continue;
+    const deadlineObj = calculateDeadline(p.tanggalBerkasKeluar, p.tanggalPinjam);
+    if (!deadlineObj) continue;
     
-    const deadline = new Date(p.tanggalBerkasKeluar).getTime();
+    const deadline = deadlineObj.getTime();
 
     if (now > deadline) {
       // TERLAMBAT
@@ -57,9 +62,9 @@ export async function syncNotifications(): Promise<void> {
         );
       }
     } else {
-      // Belum terlambat. Cek reminder (deadline <= 1 hari)
+      // Belum terlambat. Cek reminder (deadline - now <= 24 jam)
       const diffMs = deadline - now;
-      if (diffMs <= 24 * 60 * 60 * 1000) {
+      if (diffMs <= 24 * 60 * 60 * 1000 && diffMs > 0) {
         // REMINDER
         const existing = await db.select<{ id: number }[]>(
           `SELECT id FROM notifications WHERE peminjamanId = $1 AND type = 'REMINDER'`,

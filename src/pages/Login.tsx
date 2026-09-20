@@ -4,6 +4,7 @@ import { loginWithNip, SessionUser } from "../lib/auth/authService";
 
 interface LoginProps {
   onLogin: (user: SessionUser) => void;
+  onRegisterClick?: () => void;
 }
 
 const IdBadgeIcon = () => (
@@ -23,12 +24,13 @@ const LockIcon = () => (
   </svg>
 );
 
-export function Login({ onLogin }: LoginProps) {
+export function Login({ onLogin, onRegisterClick }: LoginProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +108,7 @@ export function Login({ onLogin }: LoginProps) {
           )}
 
           {/* NIP Field */}
-            <div className="flex flex-col mb-5 shrink-0">
+          <div className="flex flex-col mb-5 shrink-0">
             <label className="text-[13px] font-semibold text-gray-800 mb-2">
               Username/Nomor Induk Pegawai (NIP)
             </label>
@@ -130,9 +132,13 @@ export function Login({ onLogin }: LoginProps) {
           <div className="flex flex-col mb-5 shrink-0">
             <div className="flex justify-between items-center mb-2">
               <label className="text-[13px] font-semibold text-gray-800">Password</label>
-              <a href="#" onClick={e => e.preventDefault()} className="text-[13px] font-semibold text-[#2563eb] hover:underline">
+              <button
+                type="button"
+                onClick={() => setShowForgotModal(true)}
+                className="text-[13px] font-semibold text-[#2563eb] hover:underline cursor-pointer"
+              >
                 Lupa Password?
-              </a>
+              </button>
             </div>
             <div className="relative flex items-center">
               <div className="absolute left-4 flex items-center justify-center pointer-events-none text-gray-400">
@@ -174,15 +180,52 @@ export function Login({ onLogin }: LoginProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-11 bg-[#384e38] hover:bg-[#2c3d2c] text-white text-[15px] font-bold rounded-md transition-colors flex items-center justify-center disabled:opacity-70 shrink-0 cursor-pointer shadow-sm mx-auto"
+            className="w-full h-11 bg-[#384e38] hover:bg-[#2c3d2c] text-white text-[15px] font-bold rounded-md transition-colors flex items-center justify-center disabled:opacity-70 shrink-0 cursor-pointer shadow-sm mx-auto mb-5"
           >
             {isLoading ? 'Memproses...' : 'Masuk'}
           </button>
 
           {/* Divider */}
-          <hr className="mt-8 border-t border-[#f1f5f9] shrink-0 w-full mx-auto" />
+          <hr className="border-t border-slate-200 shrink-0 w-full mb-5" />
+
+          {/* Register Link Footer Section */}
+          <div className="text-center shrink-0 w-full">
+            <span className="text-[13px] text-slate-600">Belum punya akun? </span>
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={onRegisterClick}
+              className="text-[13px] font-bold text-[#2563eb] hover:text-[#1d4ed8] hover:underline cursor-pointer"
+            >
+              Daftar Akun Baru
+            </button>
+          </div>
         </form>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgotModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Lupa Password?</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Aplikasi ini berjalan secara lokal/offline. Untuk keamanan, pemulihan password dilakukan melalui Administrator Sistem (Super Admin).
+            </p>
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 text-xs p-3 rounded-md mb-5">
+              Silakan hubungi Super Admin di unit Rekam Medis untuk melakukan reset password akun NIP Anda.
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowForgotModal(false)}
+                className="px-4 py-2 bg-[#384e38] text-white text-sm font-semibold rounded-md hover:bg-[#2c3d2c] cursor-pointer"
+              >
+                Mengerti
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

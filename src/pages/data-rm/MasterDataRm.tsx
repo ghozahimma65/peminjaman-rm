@@ -108,6 +108,11 @@ export function MasterDataRm({ onNavigate }: { onNavigate: (page: string, nomorR
       return;
     }
 
+    if (!/^\d{16}$/.test(nik)) {
+      setFormError("NIK wajib terdiri dari tepat 16 digit angka (tanpa huruf, spasi, atau simbol).");
+      return;
+    }
+
     setIsSaving(true);
     setFormError("");
     try {
