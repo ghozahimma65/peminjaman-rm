@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Icons } from "../../components/Icons";
 import { LoadingState } from "../../components/ui/LoadingState";
+import { Modal } from "../../components/ui/Modal";
 import {
   deletePeminjamanHistory,
   getRiwayatByRm,
@@ -154,11 +155,11 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
       <div className="flex items-center gap-2 px-1 py-2 text-[10px] text-slate-500">
         <span>Peminjaman</span>
         <span>›</span>
-        <strong className="text-emerald-700">Riwayat Peminjaman</strong>
+        <strong className="text-emerald-700">Riwayat RM</strong>
       </div>
 
       <div className="px-1">
-        <h1 className="text-xl font-bold text-slate-900">Riwayat Peminjaman</h1>
+        <h1 className="text-xl font-bold text-slate-900">Riwayat RM</h1>
         <p className="mt-1 text-xs text-slate-500">Daftar rekam medis yang pernah dipinjam</p>
       </div>
 
@@ -203,7 +204,7 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
         </div>
       )}
 
-      {isLoading && <LoadingState message="Mencari riwayat peminjaman..." />}
+      {isLoading && <LoadingState message="Mencari riwayat RM..." />}
 
       {!isLoading && data && (
         <>
@@ -274,7 +275,7 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
                           <td className="px-3 text-slate-700">{transaction.peminjamName}</td>
                           <td className="px-3 text-slate-500">{formatDate(transaction.tanggalPinjam)}</td>
                           <td className="px-3 text-slate-500">{formatDate(transaction.tanggalBerkasKembali)}</td>
-                          <td className="px-3 text-slate-700">{transaction.kondisiBerkas === "RUSAK" ? "Rusak" : transaction.kondisiBerkas === "BAIK" ? "Baik" : "-"}</td>
+                          <td className="px-3 text-slate-700">{transaction.kondisiBerkas === "RUSAK" ? "Tidak Lengkap" : transaction.kondisiBerkas === "BAIK" ? "Lengkap" : "-"}</td>
                           <td className="px-3 text-slate-700">{transaction.catatan || "-"}</td>
                           <td className="px-3">
                             <span className={`inline-flex rounded-full px-2 py-1 text-[9px] font-semibold ${badgeClass}`}>
@@ -350,79 +351,40 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
         </>
       )}
 
-      {showNotFound && (
-        <div
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/30 px-4 backdrop-blur-[2px]"
-          onMouseDown={() => setShowNotFound(false)}
-        >
-          <div
-            className="w-full max-w-[380px] rounded-[22px] bg-white px-7 py-7 text-center shadow-[0_22px_50px_rgba(15,23,42,0.18)]"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-500 text-2xl text-white">×</div>
-            <h3 className="mt-6 text-[30px] font-bold text-slate-900">Data Tidak Ditemukan</h3>
-            <p className="mt-3 text-[16px] leading-6 text-slate-500">
-              Data tidak ditemukan di sistem.
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowNotFound(false)}
-              className="mt-7 w-full rounded-xl bg-[#345344] px-5 py-3 text-base font-semibold text-white shadow-[0_8px_18px_rgba(52,83,68,0.2)] transition hover:bg-[#2b4539]"
-            >
-              Kembali
-            </button>
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={showNotFound}
+        onClose={() => setShowNotFound(false)}
+        onConfirm={() => setShowNotFound(false)}
+        title="Data Tidak Ditemukan"
+        description="Data Tidak Terdaftar di Sistem atau Belum Memiliki Riwayat Peminjaman dan Pengembalian !"
+        confirmText="Kembali"
+        cancelText={null}
+        variant="notfound"
+      />
 
-      {pendingDelete && (
-        <div
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/30 px-4 backdrop-blur-[2px]"
-          onMouseDown={() => setPendingDelete(null)}
-        >
-          <div
-            className="w-full max-w-[380px] rounded-[22px] bg-white px-7 py-7 text-center shadow-[0_22px_50px_rgba(15,23,42,0.18)]"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500 text-2xl text-white">🗑</div>
-            <h3 className="mt-6 text-[24px] font-bold text-slate-900">Hapus Riwayat Peminjaman</h3>
-            <p className="mt-3 text-[14px] leading-6 text-slate-500">
-              Apakah Anda yakin ingin menghapus data riwayat peminjaman ini?
-            </p>
-            <div className="mt-7 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setPendingDelete(null)}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleDeleteConfirm()}
-                className="rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white shadow-md hover:bg-red-700"
-              >
-                Ya, Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={Boolean(pendingDelete)}
+        onClose={() => setPendingDelete(null)}
+        onConfirm={() => void handleDeleteConfirm()}
+        title="Hapus Data"
+        description="Apakah Anda Yakin Ingin Menghapus Data Ini?"
+        confirmText="Ya"
+        cancelText="Tidak"
+        variant="delete"
+      />
 
-      {pendingEdit && (
-        <div
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/30 px-4 backdrop-blur-[2px]"
-          onMouseDown={() => setPendingEdit(null)}
-        >
-          <div
-            className="w-full max-w-[420px] rounded-[22px] bg-white px-7 py-7 shadow-[0_22px_50px_rgba(15,23,42,0.18)]"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <h3 className="text-xl font-bold text-slate-900">Edit Riwayat Peminjaman</h3>
-            <p className="mt-1 text-xs text-slate-500">
-              Ubah unit peminjam atau catatan keperluan transaksi ini.
-            </p>
-            <div className="mt-4 space-y-3 text-left">
+      <Modal
+        isOpen={Boolean(pendingEdit)}
+        onClose={() => setPendingEdit(null)}
+        onConfirm={() => void handleEditSave()}
+        title="Edit Data"
+        confirmText="Ya"
+        cancelText="Tidak"
+        variant="edit"
+        description={
+          <div className="space-y-3">
+            <p className="text-center text-slate-500">Apakah Anda Yakin Untuk Mengedit Data ini?</p>
+            <div className="space-y-2 text-left">
               <label className="block text-xs font-semibold text-slate-700">
                 Asal Ruang / Unit
                 <input
@@ -440,25 +402,9 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
                 />
               </label>
             </div>
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setPendingEdit(null)}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleEditSave()}
-                className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700"
-              >
-                Simpan Perubahan
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+        }
+      />
     </div>
   );
 }

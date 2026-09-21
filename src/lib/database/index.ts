@@ -63,6 +63,7 @@ export async function initializeDatabase(): Promise<void> {
     }
 
     await ensureColumnExists("pengembalian", "kondisiBerkas", "TEXT NOT NULL DEFAULT 'BAIK'");
+    await ensureColumnExists("peminjaman", "namaPeminjam", "TEXT");
     await ensureColumnExists("data_rm", "nik", "TEXT");
     await ensureColumnExists("data_rm", "jenisKelamin", "TEXT");
     await ensureColumnExists("data_rm", "tanggalLahir", "TEXT");

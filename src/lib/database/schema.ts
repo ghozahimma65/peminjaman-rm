@@ -32,6 +32,7 @@ export const INITIALIZATION_SQL = [
     tanggalPinjam DATETIME DEFAULT CURRENT_TIMESTAMP,
     tanggalBerkasKeluar DATETIME,
     peminjamId INTEGER NOT NULL,
+    namaPeminjam TEXT,
     unit TEXT NOT NULL,
     nomorRm TEXT NOT NULL,
     namaPasien TEXT NOT NULL,

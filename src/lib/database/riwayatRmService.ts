@@ -62,13 +62,14 @@ export async function getRiwayatByRm(nomorRm: string): Promise<RiwayatRmResult> 
       p.id as peminjamanId,
       p.tanggalPinjam,
       p.tanggalBerkasKeluar,
+      p.namaPeminjam,
       p.unit,
       p.jilid,
       p.catatan,
       pg.kondisiBerkas,
       p.status as baseStatus,
       p.peminjamId,
-      u1.name as peminjamName,
+      u1.name as operatorPeminjamName,
       pg.id as pengembalianId,
       pg.tanggalBerkasKembali,
       pg.dikembalikanOlehId,
@@ -81,9 +82,10 @@ export async function getRiwayatByRm(nomorRm: string): Promise<RiwayatRmResult> 
     ORDER BY p.tanggalPinjam DESC
   `;
   
-  const rawRows = await db.select<RiwayatTransaksiRow[]>(query, [nomorRm]);
+  const rawRows = await db.select<(RiwayatTransaksiRow & { namaPeminjam?: string | null; operatorPeminjamName?: string })[]>(query, [nomorRm]);
   const transaksi = rawRows.map(t => ({
     ...t,
+    peminjamName: t.namaPeminjam || t.operatorPeminjamName || 'Petugas',
     statusPeminjaman: calculateEffectiveStatus(t.tanggalBerkasKeluar, t.tanggalPinjam, t.tanggalBerkasKembali)
   }));
 

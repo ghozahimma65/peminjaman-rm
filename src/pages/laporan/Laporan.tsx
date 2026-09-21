@@ -171,7 +171,7 @@ export function Laporan() {
       const exported =
         format === "pdf"
           ? await exportToPdf(selectedData, filters, officerInfo)
-          : await exportToExcel(selectedData, filters);
+          : await exportToExcel(selectedData, filters, officerInfo);
 
       if (exported) {
         setShowSuccess(true);
@@ -192,166 +192,244 @@ export function Laporan() {
     return true;
   });
 
-  const { tabelRuang, totalRuang, tabelStatus, totalStatusCount } = computeSummaryTables(selectedData);
+  const { tabelRuang, totalRuang, tabelStatus } = computeSummaryTables(selectedData);
 
   const inputClass =
     "mt-1.5 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none transition focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600";
   const labelClass = "text-[11px] font-semibold text-slate-600";
 
-  const renderA4Document = (isFull = false) => (
-    <div
-      className={`mx-auto bg-white font-serif text-slate-800 shadow-xl border border-slate-200 ${
-        isFull ? "w-[794px] min-h-[1123px] p-12 text-[12px]" : "w-full max-w-[595px] min-h-[842px] p-8 text-[10px]"
-      }`}
-    >
-      {/* Document Header */}
-      <div className="flex items-start justify-between border-b-2 border-emerald-700 pb-3">
-        <div className="flex items-center gap-3">
-          <img src="/logorsi.png" alt="RSI Sultan Agung" className={isFull ? "h-14 object-contain" : "h-10 object-contain"} />
-        </div>
-        <div className="text-right text-[9px] text-slate-500 leading-tight">
-          <p className="font-sans font-semibold text-slate-700">Jl. Kaligawe Raya No. 4 Semarang 50112</p>
-          <p className="font-sans">Telp. (024) 658 0015 | Fax. (024) 658 1928</p>
-          <p className="font-sans text-emerald-700 font-medium">www.rsisultanagung.co.id</p>
-        </div>
-      </div>
+  const renderA4Document = (isFull = false) => {
+    const totalDipinjam = totalRuang.jumlahDipinjam;
+    const totalDikembalikan = totalRuang.jumlahDikembalikan;
+    const totalBelumDikembalikan = totalRuang.belumDikembalikan;
+    const totalTepatWaktu = totalRuang.tepatWaktu;
+    const totalTerlambat = totalRuang.terlambat;
+    const totalStatusSum = totalDipinjam + totalDikembalikan + totalBelumDikembalikan + totalTerlambat;
 
-      {/* Document Title */}
-      <div className="mt-6 text-center">
-        <h1 className={`font-sans font-bold text-slate-900 tracking-tight ${isFull ? "text-base" : "text-sm"}`}>
-          LAPORAN REKAPITULASI DATA PEMINJAMAN
-        </h1>
-        <h2 className={`font-sans font-bold text-slate-900 tracking-tight ${isFull ? "text-base" : "text-sm"}`}>
-          DAN PENGEMBALIAN REKAM MEDIS
-        </h2>
-        <p className="mt-1 font-sans text-[10px] text-slate-600">
-          NOMOR: 042/BA-REKAMMED/RSISA/{new Date().getFullYear()}
+    const calcPct = (num: number, denom: number) =>
+      denom > 0 ? `${((num / denom) * 100).toFixed(1)}%` : "0.0%";
+
+    return (
+      <div
+        className={`mx-auto bg-white font-serif text-slate-800 shadow-xl border border-slate-200 ${
+          isFull ? "w-[840px] min-h-[1123px] p-10 text-[11px]" : "w-full max-w-[620px] min-h-[842px] p-6 text-[9px]"
+        }`}
+      >
+        {/* Document Header */}
+        <div className="flex items-center justify-between border-b-2 border-emerald-800 pb-2">
+          <div className="flex items-center gap-3">
+            <img src="/logorsi.png" alt="RSI Sultan Agung" className={isFull ? "h-12 object-contain" : "h-9 object-contain"} />
+          </div>
+          <div className="text-center font-sans">
+            <h1 className="text-sm font-bold text-slate-900 tracking-wide uppercase">RUMAH SAKIT ISLAM SULTAN AGUNG</h1>
+            <h2 className="text-xs font-bold text-slate-800 uppercase">SEMARANG</h2>
+            <p className="text-[9px] text-slate-600 font-medium">UNIT REKAM MEDIS / FILING</p>
+          </div>
+          <div className="text-right text-[8px] text-slate-500 leading-tight font-sans">
+            <p className="font-semibold text-slate-700">Jl. Kaligawe Raya No. 4</p>
+            <p>Telp. (024) 658 0015</p>
+            <p className="text-emerald-700 font-medium">rsisultanagung.co.id</p>
+          </div>
+        </div>
+
+        {/* Yellow Title Banner */}
+        <div className="mt-3 bg-yellow-300 border border-slate-900 py-1.5 text-center font-sans font-bold text-slate-900 tracking-tight text-xs uppercase shadow-xs">
+          LAPORAN PEMINJAMAN DAN PENGEMBALIAN REKAM MEDIS
+        </div>
+
+        {/* Intro & Period */}
+        <p className="mt-2 text-center font-sans text-[10px] italic text-slate-700">
+          Periode : {formatDateId(filters.startDate)} s/d {formatDateId(filters.endDate)}
         </p>
-      </div>
 
-      {/* Intro & Period */}
-      <p className="mt-5 text-justify leading-relaxed font-sans text-slate-700">
-        Menyatakan bahwa hasil rekapitulasi data peminjaman dan pengembalian berkas rekam medis adalah sebagai berikut:
-      </p>
-      <p className="mt-2 text-center font-sans font-bold text-slate-900">
-        Periode : {formatDateId(filters.startDate)} s/d {formatDateId(filters.endDate)}
-      </p>
-
-      {/* Tabel 1 */}
-      <div className="mt-6">
-        <h3 className="font-sans font-bold text-slate-900 mb-2 text-[11px]">
-          Tabel 1. Rekapitulasi Peminjaman dan Pengembalian Berkas Rekam Medis
-        </h3>
-        <table className="w-full border-collapse text-center font-sans border border-slate-300">
-          <thead>
-            <tr className="bg-emerald-50 text-emerald-950 font-bold border-b border-slate-300">
-              <th className="border border-slate-300 p-1.5 w-8">No</th>
-              <th className="border border-slate-300 p-1.5 text-left">Unit/Ruang</th>
-              <th className="border border-slate-300 p-1.5">Jumlah Dipinjam</th>
-              <th className="border border-slate-300 p-1.5">Jumlah Dikembalikan</th>
-              <th className="border border-slate-300 p-1.5">Belum Dikembalikan</th>
-              <th className="border border-slate-300 p-1.5">Tepat Waktu</th>
-              <th className="border border-slate-300 p-1.5">Terlambat</th>
-              <th className="border border-slate-300 p-1.5">Keterangan</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tabelRuang.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="border border-slate-300 p-4 text-slate-400">
-                  Tidak ada data untuk filter yang dipilih.
-                </td>
+        {/* Section 1 */}
+        <div className="mt-4">
+          <h3 className="font-sans font-bold text-slate-900 mb-1.5 text-[10px] uppercase tracking-wide">
+            1. REKAPITULASI PEMINJAMAN DAN PENGEMBALIAN REKAM MEDIS
+          </h3>
+          <table className="w-full border-collapse text-center font-sans border border-slate-400 text-[8.5px]">
+            <thead>
+              <tr className="bg-[#056839] text-white font-bold border-b border-slate-400">
+                <th className="border border-slate-400 p-1 w-6">No</th>
+                <th className="border border-slate-400 p-1 text-left">Unit / Ruang</th>
+                <th className="border border-slate-400 p-1">Jumlah Peminjaman</th>
+                <th className="border border-slate-400 p-1">%</th>
+                <th className="border border-slate-400 p-1">Jumlah Pengembalian</th>
+                <th className="border border-slate-400 p-1">%</th>
+                <th className="border border-slate-400 p-1">Belum Dikembalikan</th>
+                <th className="border border-slate-400 p-1">%</th>
+                <th className="border border-slate-400 p-1">Tepat Waktu</th>
+                <th className="border border-slate-400 p-1">%</th>
+                <th className="border border-slate-400 p-1">Terlambat</th>
+                <th className="border border-slate-400 p-1">%</th>
+                <th className="border border-slate-400 p-1">Keterangan</th>
               </tr>
-            ) : (
-              tabelRuang.map(r => (
-                <tr key={r.unit} className="hover:bg-slate-50">
-                  <td className="border border-slate-300 p-1.5">{r.no}</td>
-                  <td className="border border-slate-300 p-1.5 text-left font-medium">{r.unit}</td>
-                  <td className="border border-slate-300 p-1.5">{r.jumlahDipinjam}</td>
-                  <td className="border border-slate-300 p-1.5">{r.jumlahDikembalikan}</td>
-                  <td className="border border-slate-300 p-1.5">{r.belumDikembalikan}</td>
-                  <td className="border border-slate-300 p-1.5">{r.tepatWaktu}</td>
-                  <td className="border border-slate-300 p-1.5 text-red-600 font-medium">{r.terlambat}</td>
-                  <td className="border border-slate-300 p-1.5 text-slate-400">{r.keterangan}</td>
+            </thead>
+            <tbody>
+              {tabelRuang.length === 0 ? (
+                <tr>
+                  <td colSpan={13} className="border border-slate-300 p-3 text-slate-400">
+                    Tidak ada data untuk filter yang dipilih.
+                  </td>
                 </tr>
-              ))
-            )}
-            <tr className="bg-emerald-50/60 font-bold border-t-2 border-slate-400">
-              <td className="border border-slate-300 p-1.5" colSpan={2}>
-                Total
-              </td>
-              <td className="border border-slate-300 p-1.5">{totalRuang.jumlahDipinjam}</td>
-              <td className="border border-slate-300 p-1.5">{totalRuang.jumlahDikembalikan}</td>
-              <td className="border border-slate-300 p-1.5">{totalRuang.belumDikembalikan}</td>
-              <td className="border border-slate-300 p-1.5">{totalRuang.tepatWaktu}</td>
-              <td className="border border-slate-300 p-1.5 text-red-700">{totalRuang.terlambat}</td>
-              <td className="border border-slate-300 p-1.5">-</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* Tabel 2 */}
-      <div className="mt-6">
-        <h3 className="font-sans font-bold text-slate-900 mb-2 text-[11px]">Tabel 2. Rekapitulasi Status Berkas</h3>
-        <table className="w-full border-collapse font-sans border border-slate-300">
-          <thead>
-            <tr className="bg-emerald-50 text-emerald-950 font-bold border-b border-slate-300">
-              <th className="border border-slate-300 p-1.5 w-8 text-center">No</th>
-              <th className="border border-slate-300 p-1.5 text-left">Status Berkas</th>
-              <th className="border border-slate-300 p-1.5 text-right w-32">Jumlah</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tabelStatus.map(s => (
-              <tr key={s.no} className="hover:bg-slate-50">
-                <td className="border border-slate-300 p-1.5 text-center">{s.no}</td>
-                <td className="border border-slate-300 p-1.5 font-medium">{s.statusBerkas}</td>
-                <td className="border border-slate-300 p-1.5 text-right">{s.jumlah}</td>
+              ) : (
+                tabelRuang.map(r => (
+                  <tr key={r.unit} className="hover:bg-slate-50">
+                    <td className="border border-slate-300 p-1">{r.no}</td>
+                    <td className="border border-slate-300 p-1 text-left font-medium">{r.unit}</td>
+                    <td className="border border-slate-300 p-1">{r.jumlahDipinjam}</td>
+                    <td className="border border-slate-300 p-1 text-slate-600">{calcPct(r.jumlahDipinjam, totalDipinjam)}</td>
+                    <td className="border border-slate-300 p-1">{r.jumlahDikembalikan}</td>
+                    <td className="border border-slate-300 p-1 text-slate-600">{calcPct(r.jumlahDikembalikan, totalDikembalikan)}</td>
+                    <td className="border border-slate-300 p-1">{r.belumDikembalikan}</td>
+                    <td className="border border-slate-300 p-1 text-slate-600">{calcPct(r.belumDikembalikan, totalBelumDikembalikan)}</td>
+                    <td className="border border-slate-300 p-1">{r.tepatWaktu}</td>
+                    <td className="border border-slate-300 p-1 text-slate-600">{calcPct(r.tepatWaktu, totalTepatWaktu)}</td>
+                    <td className="border border-slate-300 p-1 text-red-600 font-medium">{r.terlambat}</td>
+                    <td className="border border-slate-300 p-1 text-slate-600">{calcPct(r.terlambat, totalTerlambat)}</td>
+                    <td className="border border-slate-300 p-1 text-slate-400">{r.keterangan || "-"}</td>
+                  </tr>
+                ))
+              )}
+              <tr className="bg-emerald-50/80 font-bold border-t-2 border-slate-500">
+                <td className="border border-slate-400 p-1" colSpan={2}>
+                  TOTAL
+                </td>
+                <td className="border border-slate-400 p-1">{totalDipinjam}</td>
+                <td className="border border-slate-400 p-1">{totalDipinjam > 0 ? "100.0%" : "0.0%"}</td>
+                <td className="border border-slate-400 p-1">{totalDikembalikan}</td>
+                <td className="border border-slate-400 p-1">{totalDikembalikan > 0 ? "100.0%" : "0.0%"}</td>
+                <td className="border border-slate-400 p-1">{totalBelumDikembalikan}</td>
+                <td className="border border-slate-400 p-1">{totalBelumDikembalikan > 0 ? "100.0%" : "0.0%"}</td>
+                <td className="border border-slate-400 p-1">{totalTepatWaktu}</td>
+                <td className="border border-slate-400 p-1">{totalTepatWaktu > 0 ? "100.0%" : "0.0%"}</td>
+                <td className="border border-slate-400 p-1 text-red-700">{totalTerlambat}</td>
+                <td className="border border-slate-400 p-1">{totalTerlambat > 0 ? "100.0%" : "0.0%"}</td>
+                <td className="border border-slate-400 p-1">-</td>
               </tr>
-            ))}
-            <tr className="bg-emerald-50/60 font-bold border-t-2 border-slate-400">
-              <td className="border border-slate-300 p-1.5 text-center" colSpan={2}>
-                Total
-              </td>
-              <td className="border border-slate-300 p-1.5 text-right">{totalStatusCount}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* Closing Note */}
-      <p className="mt-6 text-justify leading-relaxed font-sans text-slate-700">
-        Demikian laporan ini dibuat dengan sebenar-benarnya untuk dapat digunakan sebagaimana mestinya sebagai dokumen
-        rekapitulasi dan monitoring peminjaman serta pengembalian berkas rekam medis di Rumah Sakit Islam Sultan Agung.
-      </p>
-
-      {/* Signatures Block */}
-      <div className="mt-10 flex justify-between items-start font-sans text-[10px]">
-        <div className="text-left space-y-1">
-          <p className="font-bold text-slate-900">Mengetahui/Menyetujui</p>
-          <p className="text-slate-600">Kepala Unit Rekam Medis</p>
-          <div className="h-16" />
-          <p className="font-bold underline text-slate-900">( ________________________ )</p>
-          <p className="text-slate-600">NIP. ____________________</p>
+            </tbody>
+          </table>
         </div>
 
-        <div className="text-left space-y-1">
-          <p className="text-slate-600 mb-1">
-            Semarang, {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}
-          </p>
-          <p className="font-bold text-slate-900">Petugas Pelapor</p>
-          <p className="text-slate-600">Petugas Filing / Rekam Medis</p>
-          <div className="h-14" />
-          <p className="font-bold underline text-slate-900">( {user?.name || "Petugas Rekam Medis"} )</p>
-          <p className="text-slate-600">NIP. {user?.nip || "-"}</p>
-        </div>
-      </div>
+        {/* Section 2 & Section 3 Side-by-Side */}
+        <div className="mt-4 grid grid-cols-2 gap-3 text-[8.5px]">
+          {/* Section 2 */}
+          <div>
+            <h3 className="font-sans font-bold text-slate-900 mb-1 text-[9.5px] uppercase tracking-wide">
+              2. REKAPITULASI STATUS BERKAS
+            </h3>
+            <table className="w-full border-collapse font-sans border border-slate-400">
+              <thead>
+                <tr className="bg-[#056839] text-white font-bold border-b border-slate-400">
+                  <th className="border border-slate-400 p-1 w-6 text-center">No</th>
+                  <th className="border border-slate-400 p-1 text-left">Status Berkas</th>
+                  <th className="border border-slate-400 p-1 text-right w-14">Jumlah</th>
+                  <th className="border border-slate-400 p-1 text-right w-16">Persentase</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tabelStatus.map(s => (
+                  <tr key={s.no} className="hover:bg-slate-50">
+                    <td className="border border-slate-300 p-1 text-center">{s.no}</td>
+                    <td className="border border-slate-300 p-1 font-medium">{s.statusBerkas}</td>
+                    <td className="border border-slate-300 p-1 text-right">{s.jumlah}</td>
+                    <td className="border border-slate-300 p-1 text-right">{calcPct(s.jumlah, totalStatusSum)}</td>
+                  </tr>
+                ))}
+                <tr key="terlambat-status" className="hover:bg-slate-50">
+                  <td className="border border-slate-300 p-1 text-center">4</td>
+                  <td className="border border-slate-300 p-1 font-medium">Berkas terlambat dikembalikan</td>
+                  <td className="border border-slate-300 p-1 text-right">{totalTerlambat}</td>
+                  <td className="border border-slate-300 p-1 text-right">{calcPct(totalTerlambat, totalStatusSum)}</td>
+                </tr>
+                <tr className="bg-emerald-50/80 font-bold border-t-2 border-slate-500">
+                  <td className="border border-slate-400 p-1 text-center" colSpan={2}>
+                    TOTAL
+                  </td>
+                  <td className="border border-slate-400 p-1 text-right">{totalStatusSum}</td>
+                  <td className="border border-slate-400 p-1 text-right">{totalStatusSum > 0 ? "100.0%" : "0.0%"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-      {/* Footer */}
-      <div className="mt-12 text-right font-sans text-[8px] text-slate-400">Halaman 1 dari 1</div>
-    </div>
-  );
+          {/* Section 3 */}
+          <div>
+            <h3 className="font-sans font-bold text-slate-900 mb-1 text-[9.5px] uppercase tracking-wide">
+              3. RINGKASAN REKAPITULASI
+            </h3>
+            <table className="w-full border-collapse font-sans border border-slate-400">
+              <thead>
+                <tr className="bg-[#056839] text-white font-bold border-b border-slate-400">
+                  <th className="border border-slate-400 p-1 text-left">Uraian</th>
+                  <th className="border border-slate-400 p-1 text-right w-14">Jumlah</th>
+                  <th className="border border-slate-400 p-1 text-right w-16">Persentase</th>
+                  <th className="border border-slate-400 p-1 text-center w-12">Jumlah</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="hover:bg-slate-50">
+                  <td className="border border-slate-300 p-1 font-medium">Total Berkas Dipinjam</td>
+                  <td className="border border-slate-300 p-1 text-right">{totalDipinjam}</td>
+                  <td className="border border-slate-300 p-1 text-center">-</td>
+                  <td className="border border-slate-300 p-1 text-center">1</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="border border-slate-300 p-1 font-medium">Total Berkas Dikembalikan</td>
+                  <td className="border border-slate-300 p-1 text-right">{totalDikembalikan}</td>
+                  <td className="border border-slate-300 p-1 text-center">-</td>
+                  <td className="border border-slate-300 p-1 text-center">1</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="border border-slate-300 p-1 font-medium">Total Berkas Belum Dikembalikan</td>
+                  <td className="border border-slate-300 p-1 text-right">{totalBelumDikembalikan}</td>
+                  <td className="border border-slate-300 p-1 text-right">{calcPct(totalBelumDikembalikan, totalDipinjam)}</td>
+                  <td className="border border-slate-300 p-1 text-center">1</td>
+                </tr>
+                <tr className="hover:bg-slate-50">
+                  <td className="border border-slate-300 p-1 font-medium">Total Berkas Terlambat</td>
+                  <td className="border border-slate-300 p-1 text-right">{totalTerlambat}</td>
+                  <td className="border border-slate-300 p-1 text-right">{calcPct(totalTerlambat, totalDipinjam)}</td>
+                  <td className="border border-slate-300 p-1 text-center">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Closing Note */}
+        <p className="mt-4 text-justify leading-relaxed font-sans text-slate-700 text-[8.5px]">
+          Demikian laporan ini dibuat dengan sebenar-benarnya untuk dapat digunakan sebagaimana mestinya sebagai dokumen
+          rekapitulasi dan monitoring peminjaman serta pengembalian berkas rekam medis di Rumah Sakit Islam Sultan Agung.
+        </p>
+
+        {/* Signatures Block */}
+        <div className="mt-6 flex justify-between items-start font-sans text-[9px]">
+          <div className="text-left space-y-0.5">
+            <p className="font-bold text-slate-900">Mengetahui/Menyetujui</p>
+            <p className="text-slate-600">Kepala Unit Rekam Medis</p>
+            <div className="h-10" />
+            <p className="font-bold underline text-slate-900">( ________________________ )</p>
+            <p className="text-slate-600">NIP. ____________________</p>
+          </div>
+
+          <div className="text-left space-y-0.5">
+            <p className="text-slate-600 mb-0.5">
+              Semarang, {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}
+            </p>
+            <p className="font-bold text-slate-900">Petugas Pelapor</p>
+            <p className="text-slate-600">Petugas Filing / Rekam Medis</p>
+            <div className="h-10" />
+            <p className="font-bold underline text-slate-900">( {user?.name || "Petugas Rekam Medis"} )</p>
+            <p className="text-slate-600">NIP. {user?.nip || "-"}</p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-6 text-right font-sans text-[7.5px] text-slate-400">Halaman 1 dari 1</div>
+      </div>
+    );
+  };
 
   return (
     <div className="relative min-h-full space-y-4 pb-8 text-slate-800">
@@ -651,13 +729,10 @@ export function Laporan() {
         onClose={() => setShowExportConfirm(false)}
         onConfirm={() => void handleExport()}
         title="Unduh Laporan"
-        confirmText="Ya, Unduh Sekarang"
-        cancelText="Batal"
-        description={
-          <p className="text-center text-sm text-slate-600">
-            Apakah Anda yakin untuk mengunduh berkas laporan format <strong>.{format.toUpperCase()}</strong> ini?
-          </p>
-        }
+        description="Apakah Anda Yakin Untuk Mengunduh Berkas Laporan Ini?"
+        confirmText="Ya"
+        cancelText="Tidak"
+        variant="download"
       />
     </div>
   );

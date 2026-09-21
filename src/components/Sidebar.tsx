@@ -14,10 +14,10 @@ export function Sidebar({ activePage, setActivePage, visibleMenuItems, onLogoutC
   const dashboard = menuById.get("dashboard");
   const DashboardIcon = dashboard?.icon;
   const menu: { label: string; items: Array<[string, string, ComponentType]> }[] = [
-    { label: "PEMINJAMAN", items: [["peminjaman-baru", "Ajukan Peminjaman", Icons.Peminjaman], ["daftar-peminjaman", "Daftar Peminjaman", Icons.DataRM], ["riwayat-rm", "Riwayat Peminjaman", Icons.Pengembalian]] },
-    { label: "PENGEMBALIAN", items: [["proses-pengembalian", "Pengembalian RM", Icons.Pengembalian], ["berkas-belum-kembali", "Daftar Pengembalian", Icons.DataRM]] },
-    { label: "MASTER DATA", items: [["data-rm", "Data Pasien/RM", Icons.DataRM]] },
-    { label: "EXPORT DATA", items: [["rekap-peminjaman", "Laporan", Icons.Laporan]] },
+    { label: "PEMINJAMAN", items: [["peminjaman-baru", "Ajukan Peminjaman", Icons.PlusCircle], ["daftar-peminjaman", "Daftar Peminjaman", Icons.List], ["riwayat-rm", "Riwayat RM", Icons.History]] },
+    { label: "PENGEMBALIAN", items: [["proses-pengembalian", "Pengembalian RM", Icons.FileReturn], ["berkas-belum-kembali", "Daftar Pengembalian", Icons.Table]] },
+    { label: "MASTER DATA", items: [["data-rm", "Data Pasien/RM", Icons.ClipboardData]] },
+    { label: "EXPORT DATA", items: [["rekap-peminjaman", "Laporan", Icons.FileText]] },
   ];
 
   return (

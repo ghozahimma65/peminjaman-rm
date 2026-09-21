@@ -38,7 +38,7 @@ export interface PengembalianHistoryRow {
 
 export async function findActivePeminjamanByRm(nomorRm: string): Promise<PeminjamanDetailRow | null> {
   const db = await getDb();
-  const result = await db.select<PeminjamanDetailRow[]>(
+  const result = await db.select<(PeminjamanDetailRow & { namaPeminjam?: string | null })[]>(
     `SELECT p.*, u.name as peminjamName
      FROM peminjaman p 
      LEFT JOIN users u ON p.peminjamId = u.id 
@@ -49,11 +49,17 @@ export async function findActivePeminjamanByRm(nomorRm: string): Promise<Peminja
      ORDER BY p.tanggalPinjam DESC LIMIT 1`,
     [nomorRm]
   );
-  return result.length > 0 ? result[0] : null;
+  if (result.length === 0) return null;
+  const row = result[0];
+  return {
+    ...row,
+    peminjamName: row.namaPeminjam || row.peminjamName || 'Petugas'
+  };
 }
 
 export async function processPengembalian(peminjamanId: number, userId: number, kondisiBerkas: "BAIK" | "RUSAK" = "BAIK", tanggalBerkasKembali?: string): Promise<void> {
   const db = await getDb();
+  // Tanggal kembali HARUS waktu aktual saat proses diproses (Requirement H & I)
   const returnDate = tanggalBerkasKembali || new Date().toISOString();
 
   // ── Validasi temporal: tanggal kembali tidak boleh lebih awal dari berkas keluar ──
@@ -155,8 +161,8 @@ export async function getPengembalianHistory(filters?: FilterPengembalian): Prom
   let query = `
     SELECT 
       pg.id, pg.peminjamanId, pg.tanggalBerkasKembali, pg.dikembalikanOlehId, pg.konfirmasiKembali, pg.kondisiBerkas,
-      p.nomorRm, p.namaPasien, p.tanggalPinjam, p.tanggalBerkasKeluar, p.unit, p.jilid, p.status,
-      u1.name as peminjamName,
+      p.nomorRm, p.namaPasien, p.tanggalPinjam, p.tanggalBerkasKeluar, p.unit, p.jilid, p.status, p.namaPeminjam,
+      u1.name as operatorPeminjamName,
       u2.name as dikembalikanOlehName
     FROM pengembalian pg
     INNER JOIN peminjaman p ON pg.peminjamanId = p.id
@@ -184,7 +190,11 @@ export async function getPengembalianHistory(filters?: FilterPengembalian): Prom
   
   query += ` ORDER BY pg.tanggalBerkasKembali DESC`;
   
-  return await db.select<PengembalianHistoryRow[]>(query, params);
+  const rows = await db.select<(PengembalianHistoryRow & { namaPeminjam?: string | null; operatorPeminjamName?: string })[]>(query, params);
+  return rows.map(r => ({
+    ...r,
+    peminjamName: r.namaPeminjam || r.operatorPeminjamName || 'Petugas'
+  }));
 }
 
 export async function getUniqueUnitsFromPengembalian(): Promise<string[]> {

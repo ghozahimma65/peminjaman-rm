@@ -60,6 +60,8 @@ function AppContent() {
   const confirmLogout = async () => {
     await logout();
     setShowLogoutConfirm(false);
+    setShowLogin(false);
+    setShowRegister(false);
     setActivePage("dashboard");
   };
 
@@ -139,11 +141,11 @@ function AppContent() {
     <>
       <Modal
         isOpen={showLogoutConfirm}
-        title="Konfirmasi Logout"
-        description="Apakah Anda yakin ingin keluar dari aplikasi?"
-        confirmText="Ya, Logout"
-        cancelText="Batal"
-        isDanger={true}
+        title="Logout"
+        description="Apakah Anda Yakin Ingin Keluar Dari Sistem?"
+        confirmText="Ya"
+        cancelText="Tidak"
+        variant="logout"
         onClose={() => setShowLogoutConfirm(false)}
         onConfirm={confirmLogout}
       />

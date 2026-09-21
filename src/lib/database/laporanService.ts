@@ -36,9 +36,9 @@ export async function getLaporanData(filters: LaporanFilter): Promise<LaporanRow
   let query = `
     SELECT 
       p.id, p.nomorRm, p.namaPasien, p.tanggalPinjam, p.tanggalBerkasKeluar, 
-      p.unit, p.jilid,
+      p.unit, p.jilid, p.namaPeminjam,
       p.status as baseStatus,
-      u1.name as peminjamName,
+      u1.name as operatorPeminjamName,
       k.tanggalBerkasKembali, 
       u2.name as pengembaliName
     FROM peminjaman p
@@ -69,10 +69,11 @@ export async function getLaporanData(filters: LaporanFilter): Promise<LaporanRow
 
   query += ` ORDER BY p.tanggalPinjam DESC`;
 
-  const rows = await db.select<(LaporanRow & { baseStatus?: string })[]>(query, params);
+  const rows = await db.select<(LaporanRow & { baseStatus?: string; namaPeminjam?: string | null; operatorPeminjamName?: string })[]>(query, params);
   
   let mapped = rows.map(r => ({
     ...r,
+    peminjamName: r.namaPeminjam || r.operatorPeminjamName || 'Petugas',
     status: calculateEffectiveStatus(r.tanggalBerkasKeluar, r.tanggalPinjam, r.tanggalBerkasKembali)
   }));
 

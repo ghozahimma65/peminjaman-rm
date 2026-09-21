@@ -30,7 +30,6 @@ export function Login({ onLogin, onRegisterClick }: LoginProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showForgotModal, setShowForgotModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,19 +62,6 @@ export function Login({ onLogin, onRegisterClick }: LoginProps) {
 
       {/* Header Section */}
       <div className="relative w-full max-w-[480px] flex justify-center mb-7 sm:mb-8 z-10">
-        {/* Plus Button Decoration */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 hidden sm:block">
-          <button 
-            type="button"
-            className="w-[40px] h-[40px] rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white backdrop-blur-sm transition-colors cursor-pointer"
-            aria-label="Add"
-          >
-            <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
-        </div>
-
         {/* Hospital Brand Logo */}
         <img
           src="/logo-login.png"
@@ -86,30 +72,30 @@ export function Login({ onLogin, onRegisterClick }: LoginProps) {
 
       {/* Login Card */}
       <div
-        className="w-full max-w-[480px] bg-white rounded-lg shadow-2xl flex flex-col items-center pt-10 sm:pt-11 pb-8 sm:pb-9 px-5 sm:px-10 relative z-10"
+        className="w-full max-w-[480px] bg-white rounded-lg shadow-2xl flex flex-col items-center pt-8 sm:pt-9 pb-8 sm:pb-9 px-5 sm:px-10 relative z-10"
       >
         {/* User Avatar */}
-        <div className="w-16 h-16 rounded-full bg-[#f8fafc] flex items-center justify-center mb-5 shrink-0 shadow-sm border border-gray-100">
+        <div className="w-16 h-16 rounded-full bg-[#f8fafc] flex items-center justify-center mb-4 shrink-0 shadow-sm border border-gray-100">
           <div className="text-gray-600">
             <Icons.User />
           </div>
         </div>
 
         {/* Login Title */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-7 shrink-0 leading-none">Login</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 shrink-0 leading-none">Login</h2>
 
         {/* Form Container */}
         <form onSubmit={handleSubmit} className="w-full flex flex-col mx-auto">
           {/* Error Message */}
           {loginError && (
-            <div className="text-red-600 text-[13px] mb-4 text-center bg-red-50 py-2.5 px-3 rounded-md shrink-0 font-medium border border-red-200">
+            <div className="w-full text-red-600 text-[13px] mb-4 text-center bg-red-50 py-2.5 px-3 rounded-md font-medium border border-red-200 leading-snug">
               {loginError}
             </div>
           )}
 
           {/* NIP Field */}
-          <div className="flex flex-col mb-5 shrink-0">
-            <label className="text-[13px] font-semibold text-gray-800 mb-2">
+          <div className="flex flex-col mb-4 shrink-0">
+            <label className="text-[13px] font-semibold text-gray-800 mb-1.5">
               Username/Nomor Induk Pegawai (NIP)
             </label>
             <div className="relative flex items-center">
@@ -129,17 +115,8 @@ export function Login({ onLogin, onRegisterClick }: LoginProps) {
           </div>
 
           {/* Password Field */}
-          <div className="flex flex-col mb-5 shrink-0">
-            <div className="flex justify-between items-center mb-2">
-              <label className="text-[13px] font-semibold text-gray-800">Password</label>
-              <button
-                type="button"
-                onClick={() => setShowForgotModal(true)}
-                className="text-[13px] font-semibold text-[#2563eb] hover:underline cursor-pointer"
-              >
-                Lupa Password?
-              </button>
-            </div>
+          <div className="flex flex-col mb-6 shrink-0">
+            <label className="text-[13px] font-semibold text-gray-800 mb-1.5">Password</label>
             <div className="relative flex items-center">
               <div className="absolute left-4 flex items-center justify-center pointer-events-none text-gray-400">
                 <LockIcon />
@@ -162,18 +139,6 @@ export function Login({ onLogin, onRegisterClick }: LoginProps) {
                 {showPassword ? <Icons.Eye /> : <Icons.EyeOff />}
               </button>
             </div>
-          </div>
-
-          {/* Ingat Saya */}
-          <div className="flex items-center mb-6 shrink-0">
-            <input
-              type="checkbox"
-              id="remember"
-              className="w-4 h-4 text-[#384e38] border-gray-300 rounded-[3px] focus:ring-[#384e38] cursor-pointer"
-            />
-            <label htmlFor="remember" className="ml-[10px] text-[13px] text-gray-600 font-medium cursor-pointer select-none">
-              Ingat Saya
-            </label>
           </div>
 
           {/* Submit Button */}
@@ -202,30 +167,6 @@ export function Login({ onLogin, onRegisterClick }: LoginProps) {
           </div>
         </form>
       </div>
-
-      {/* Forgot Password Modal */}
-      {showForgotModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Lupa Password?</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Aplikasi ini berjalan secara lokal/offline. Untuk keamanan, pemulihan password dilakukan melalui Administrator Sistem (Super Admin).
-            </p>
-            <div className="bg-blue-50 border border-blue-200 text-blue-800 text-xs p-3 rounded-md mb-5">
-              Silakan hubungi Super Admin di unit Rekam Medis untuk melakukan reset password akun NIP Anda.
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowForgotModal(false)}
-                className="px-4 py-2 bg-[#384e38] text-white text-sm font-semibold rounded-md hover:bg-[#2c3d2c] cursor-pointer"
-              >
-                Mengerti
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

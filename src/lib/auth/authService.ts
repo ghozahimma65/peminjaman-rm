@@ -164,3 +164,32 @@ export async function updateUserProfile(
     );
   }
 }
+
+export async function changeUserPassword(
+  userId: number,
+  oldPasswordPlain: string,
+  newPasswordPlain: string
+): Promise<void> {
+  const db = await getDb();
+
+  const users = await db.select<{ id: number; passwordHash: string }[]>(
+    "SELECT id, passwordHash FROM users WHERE id = $1",
+    [userId]
+  );
+
+  if (users.length === 0) {
+    throw new Error("Pengguna tidak ditemukan.");
+  }
+
+  const isValid = await bcrypt.compare(oldPasswordPlain, users[0].passwordHash);
+  if (!isValid) {
+    throw new Error("Password lama tidak sesuai.");
+  }
+
+  const newHash = await bcrypt.hash(newPasswordPlain, 10);
+
+  await db.execute(
+    "UPDATE users SET passwordHash = $1, updatedAt = CURRENT_TIMESTAMP WHERE id = $2",
+    [newHash, userId]
+  );
+}

@@ -6,6 +6,7 @@ export interface PeminjamanRow {
   tanggalPinjam: string;
   tanggalBerkasKeluar?: string | null;
   peminjamId: number;
+  namaPeminjam?: string | null;
   unit: string;
   nomorRm: string;
   namaPasien: string;
@@ -14,7 +15,7 @@ export interface PeminjamanRow {
   status: "DIPINJAM" | "DIKEMBALIKAN" | "TERLAMBAT";
   createdAt?: string;
   updatedAt?: string;
-  peminjamName?: string; // from join
+  peminjamName?: string; // from namaPeminjam or user join
 }
 
 export async function checkActivePeminjaman(nomorRm: string): Promise<PeminjamanRow | null> {
@@ -41,13 +42,14 @@ export async function createPeminjaman(data: Omit<PeminjamanRow, 'id' | 'created
 
   const result = await db.execute(
     `INSERT INTO peminjaman (
-      tanggalPinjam, tanggalBerkasKeluar, peminjamId, unit, 
+      tanggalPinjam, tanggalBerkasKeluar, peminjamId, namaPeminjam, unit, 
       nomorRm, namaPasien, jilid, catatan, status
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
     [
       data.tanggalPinjam,
       data.tanggalBerkasKeluar || null,
       data.peminjamId,
+      data.namaPeminjam || null,
       data.unit,
       data.nomorRm,
       data.namaPasien,
@@ -62,12 +64,12 @@ export async function createPeminjaman(data: Omit<PeminjamanRow, 'id' | 'created
 
 export async function getAllPeminjaman(): Promise<PeminjamanRow[]> {
   const db = await getDb();
-  const rows = await db.select<(PeminjamanRow & { tanggalBerkasKembali?: string | null })[]>(
-    `SELECT p.id, p.tanggalPinjam, p.tanggalBerkasKeluar, p.peminjamId,
+  const rows = await db.select<(PeminjamanRow & { tanggalBerkasKembali?: string | null; operatorName?: string })[]>(
+    `SELECT p.id, p.tanggalPinjam, p.tanggalBerkasKeluar, p.peminjamId, p.namaPeminjam,
       p.unit, p.nomorRm, p.namaPasien, p.jilid, p.catatan,
       p.createdAt, p.updatedAt,
       pg.tanggalBerkasKembali,
-      u.name as peminjamName
+      u.name as operatorName
      FROM peminjaman p
      LEFT JOIN pengembalian pg ON pg.peminjamanId = p.id
      LEFT JOIN users u ON p.peminjamId = u.id
@@ -76,6 +78,7 @@ export async function getAllPeminjaman(): Promise<PeminjamanRow[]> {
 
   return rows.map(r => ({
     ...r,
+    peminjamName: r.namaPeminjam || r.operatorName || 'Petugas',
     status: calculateEffectiveStatus(r.tanggalBerkasKeluar, r.tanggalPinjam, r.tanggalBerkasKembali)
   }));
 }
