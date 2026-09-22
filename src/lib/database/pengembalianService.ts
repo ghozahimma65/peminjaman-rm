@@ -8,6 +8,7 @@ export interface PeminjamanDetailRow {
   unit: string;
   nomorRm: string;
   namaPasien: string;
+  namaPeminjam: string | null;
   jilid: string | null;
   catatan: string | null;
   status: string;
@@ -25,6 +26,7 @@ export interface PengembalianHistoryRow {
   // From peminjaman
   nomorRm: string;
   namaPasien: string;
+  catatan?: string | null;
   tanggalPinjam: string;
   tanggalBerkasKeluar: string | null;
   unit: string;
@@ -161,7 +163,7 @@ export async function getPengembalianHistory(filters?: FilterPengembalian): Prom
   let query = `
     SELECT 
       pg.id, pg.peminjamanId, pg.tanggalBerkasKembali, pg.dikembalikanOlehId, pg.konfirmasiKembali, pg.kondisiBerkas,
-      p.nomorRm, p.namaPasien, p.tanggalPinjam, p.tanggalBerkasKeluar, p.unit, p.jilid, p.status, p.namaPeminjam,
+      p.nomorRm, p.namaPasien, p.catatan, p.tanggalPinjam, p.tanggalBerkasKeluar, p.unit, p.jilid, p.status, p.namaPeminjam,
       u1.name as operatorPeminjamName,
       u2.name as dikembalikanOlehName
     FROM pengembalian pg
@@ -174,13 +176,13 @@ export async function getPengembalianHistory(filters?: FilterPengembalian): Prom
   const params: (string | number)[] = [];
   
   if (filters?.tanggalMulai) {
-    params.push(filters.tanggalMulai + ' 00:00:00');
-    query += ` AND pg.tanggalBerkasKembali >= $${params.length}`;
+    params.push(filters.tanggalMulai);
+    query += ` AND date(pg.tanggalBerkasKembali) >= date($${params.length})`;
   }
   
   if (filters?.tanggalAkhir) {
-    params.push(filters.tanggalAkhir + ' 23:59:59');
-    query += ` AND pg.tanggalBerkasKembali <= $${params.length}`;
+    params.push(filters.tanggalAkhir);
+    query += ` AND date(pg.tanggalBerkasKembali) <= date($${params.length})`;
   }
   
   if (filters?.unit) {

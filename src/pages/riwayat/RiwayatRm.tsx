@@ -152,12 +152,6 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
 
   return (
     <div className="min-h-full space-y-4 pb-8 text-slate-800">
-      <div className="flex items-center gap-2 px-1 py-2 text-[10px] text-slate-500">
-        <span>Peminjaman</span>
-        <span>›</span>
-        <strong className="text-emerald-700">Riwayat RM</strong>
-      </div>
-
       <div className="px-1">
         <h1 className="text-xl font-bold text-slate-900">Riwayat RM</h1>
         <p className="mt-1 text-xs text-slate-500">Daftar rekam medis yang pernah dipinjam</p>

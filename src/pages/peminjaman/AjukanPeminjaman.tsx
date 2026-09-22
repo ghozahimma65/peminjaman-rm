@@ -105,7 +105,6 @@ export function AjukanPeminjaman({ onNavigate, initialNomorRm = "" }: { onNaviga
 
   return (
     <div className="min-h-full space-y-3 pb-8 text-slate-800">
-      <div className="flex items-center gap-2 px-1 py-2 text-[11px] text-slate-500"><span>Peminjaman</span><span>›</span><strong className="text-emerald-700">Ajukan Peminjaman</strong></div>
       <div className="flex items-start gap-3 px-3 py-2"><span className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-700 text-white"><Icons.PlusCircle /></span><div><h1 className="text-lg font-bold text-slate-900">Peminjaman Berkas Rekam Medis</h1><p className="text-[10px] text-slate-500">Catat peminjaman berkas rekam medis dengan lengkap.</p></div></div>
       {errorMsg && <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{errorMsg}</div>}
       {successMsg && <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-700">{successMsg}</div>}

@@ -57,10 +57,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id: "laporan-group", 
     label: "Laporan", 
     icon: Icons.Laporan,
-    subItems: [
-      { id: "riwayat-rm", label: "Riwayat RM" },
-      { id: "rekap-peminjaman", label: "Rekap Peminjaman" }
-    ]
+    subItems: [{ id: "rekap-peminjaman", label: "Rekap Peminjaman" }]
   },
   { id: "log-login", label: "Log Login", icon: Icons.LogLogin, adminOnly: true },
   { id: "pengaturan", label: "Pengaturan", icon: Icons.Pengaturan, adminOnly: true },

@@ -95,12 +95,34 @@ export function Topbar({ user, activePage, onNavigate, onLogoutClick }: TopbarPr
     );
   };
 
+  const getBreadcrumb = () => {
+    if (activePage === "data-rm") {
+      return { parent: "Master Data", current: "Data Pasien/RM" };
+    }
+    if (activePage === "riwayat-rm") {
+      return { parent: "Master Data", current: "Riwayat RM" };
+    }
+    if (activePage === "proses-pengembalian" || activePage === "berkas-belum-kembali") {
+      return { parent: "Pengembalian", current: getActiveLabel() };
+    }
+    if (activePage === "rekap-peminjaman") {
+      return { parent: "Export Data", current: "Laporan" };
+    }
+    return { parent: "Peminjaman", current: getActiveLabel() };
+  };
+
+  const breadcrumb = getBreadcrumb();
+
   return (
     <header className="flex h-[58px] shrink-0 items-center justify-between border-b border-slate-200 bg-slate-50 px-5 sm:px-7">
       {activePage === "dashboard" ? (
         <div><h2 className="text-lg font-bold text-slate-800">Selamat datang !</h2><p className="text-[10px] text-slate-500">Kelola peminjaman dan pengembalian rekam medis dengan mudah</p></div>
       ) : (
-        <div className="flex items-center gap-1 text-[10px] text-slate-500"><span>Peminjaman</span><span>›</span><strong className="text-emerald-700">{getActiveLabel()}</strong></div>
+        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <span>{breadcrumb.parent}</span>
+          <span className="text-slate-400">›</span>
+          <strong className="font-semibold text-emerald-800">{breadcrumb.current}</strong>
+        </div>
       )}
       <div className="flex items-center gap-4">
         <div className="notification-wrapper" ref={notificationRef}>

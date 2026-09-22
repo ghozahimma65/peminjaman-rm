@@ -25,7 +25,8 @@ export const INITIALIZATION_SQL = [
     nik TEXT,
     jenisKelamin TEXT,
     tanggalLahir TEXT,
-    alamat TEXT
+    alamat TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );`,
   `CREATE TABLE IF NOT EXISTS peminjaman (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

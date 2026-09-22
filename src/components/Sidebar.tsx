@@ -14,9 +14,9 @@ export function Sidebar({ activePage, setActivePage, visibleMenuItems, onLogoutC
   const dashboard = menuById.get("dashboard");
   const DashboardIcon = dashboard?.icon;
   const menu: { label: string; items: Array<[string, string, ComponentType]> }[] = [
-    { label: "PEMINJAMAN", items: [["peminjaman-baru", "Ajukan Peminjaman", Icons.PlusCircle], ["daftar-peminjaman", "Daftar Peminjaman", Icons.List], ["riwayat-rm", "Riwayat RM", Icons.History]] },
+    { label: "PEMINJAMAN", items: [["peminjaman-baru", "Ajukan Peminjaman", Icons.PlusCircle], ["daftar-peminjaman", "Daftar Peminjaman", Icons.List]] },
     { label: "PENGEMBALIAN", items: [["proses-pengembalian", "Pengembalian RM", Icons.FileReturn], ["berkas-belum-kembali", "Daftar Pengembalian", Icons.Table]] },
-    { label: "MASTER DATA", items: [["data-rm", "Data Pasien/RM", Icons.ClipboardData]] },
+    { label: "MASTER DATA", items: [["data-rm", "Data Pasien/RM", Icons.ClipboardData], ["riwayat-rm", "Riwayat RM", Icons.History]] },
     { label: "EXPORT DATA", items: [["rekap-peminjaman", "Laporan", Icons.FileText]] },
   ];
 

@@ -33,12 +33,12 @@ export function Portal({ onEnter }: PortalProps) {
         />
       </header>
 
-      {/* ── Heading + Description — down into the white/mint transition ── */}
+      {/* ── Heading — down into the white/mint transition ── */}
       <div
         className="absolute z-20 flex flex-col"
         style={{
-          left: "11vw",
-          top: "calc(27% + 72px)",
+          left: "7vw",
+          top: "calc(44% + 72px)",
           gap: "18px",
           maxWidth: "720px",
         }}
@@ -46,7 +46,7 @@ export function Portal({ onEnter }: PortalProps) {
         {/* Heading */}
         <h1
           style={{
-            color: "#075E4B",
+            color: "#ffffffff",
             fontWeight: 700,
             fontSize: "clamp(48px, 3.6vw, 52px)",
             lineHeight: 1.05,
@@ -57,40 +57,46 @@ export function Portal({ onEnter }: PortalProps) {
         >
           {"Sistem Peminjaman dan\nPengembalian Rekam Medis"}
         </h1>
+      </div>
 
-        {/* Description */}
+      {/* ── Description — in the dark green wave area marked by user ── */}
+      <div
+        className="absolute z-20"
+        style={{
+          left: "7vw",
+          top: "72%",
+          maxWidth: "540px",
+        }}
+      >
         <p
           style={{
-            color: "#4C8F83",
-            fontSize: "clamp(13px, 1vw, 15px)",
+            color: "#ffffff",
+            fontSize: "clamp(13px, 20vw, 15px)",
             lineHeight: 1.6,
             margin: 0,
-            maxWidth: "580px",
             fontWeight: 400,
           }}
         >
-          Layanan pengelolaan, peminjaman, dan penelusuran berkas rekam
+          Layanan pengelolaan, peminjaman, dan pengembalian berkas rekam medis
           <br />
-          medis RSI Sultan Agung yang cepat, aman, paperless, dan berintegritas
-          <br />
-          syariah.
+          RSI Sultan Agung Semarang
         </p>
       </div>
 
       {/* ── CTA — independent positioning, lower portion of the page ── */}
       <div
         className="absolute z-20"
-        style={{ left: "11vw", top: "83%" }}
+        style={{ left: "6.5vw", top: "83%" }}
       >
         <button
           onClick={onEnter}
-          className="group flex items-center gap-4 bg-white hover:bg-gray-50 text-[#065f46] rounded-full pr-8 pl-2 py-2 shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
+          className="group flex items-center gap-3 bg-white hover:bg-gray-50 text-[#065f46] rounded-full pr-5 pl-1.5 py-1.5 shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
           style={{ border: "2px solid transparent" }}
         >
-          <div className="w-12 h-12 bg-[#fbbf24] rounded-full flex items-center justify-center text-white transition-transform duration-300 group-hover:rotate-12 shadow-inner">
+          <div className="w-9 h-9 bg-[#fbbf24] rounded-full flex items-center justify-center text-white transition-transform duration-300 group-hover:rotate-12 shadow-inner">
             <Icons.ChevronRight />
           </div>
-          <span className="font-bold tracking-widest text-sm">
+          <span className="font-bold tracking-wider text-xs">
             MASUK KE SISTEM
           </span>
         </button>

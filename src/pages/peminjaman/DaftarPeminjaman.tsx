@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Icons } from "../../components/Icons";
 import { LoadingState } from "../../components/ui/LoadingState";
 import { getAllPeminjaman, PeminjamanRow } from "../../lib/database/peminjamanService";
+import { RUANGAN_OPTIONS } from "../../constants";
 
 export function DaftarPeminjaman({ onNavigate }: { onNavigate: (page: string) => void }) {
   const [data, setData] = useState<PeminjamanRow[]>([]);
@@ -30,7 +31,6 @@ export function DaftarPeminjaman({ onNavigate }: { onNavigate: (page: string) =>
     return () => window.removeEventListener("focus", reloadOnFocus);
   }, []);
 
-  const rooms = Array.from(new Set(data.map(row => row.unit).filter(Boolean)));
   const filteredData = data.filter(row => {
     const searchMatch = `${row.nomorRm} ${row.namaPasien}`.toLowerCase().includes(search.toLowerCase());
     const roomMatch = roomFilter === "all" || row.unit === roomFilter;
@@ -55,18 +55,128 @@ export function DaftarPeminjaman({ onNavigate }: { onNavigate: (page: string) =>
   if (isLoading) return <LoadingState message="Memuat daftar peminjaman..." />;
 
   return (
-    <div className="min-h-full space-y-3 pb-8 text-slate-800">
-      <div className="flex items-center gap-2 px-1 py-2 text-[11px] text-slate-500"><span>Peminjaman</span><span>›</span><strong className="text-emerald-700">Daftar Peminjaman</strong></div>
-      <div className="flex items-center gap-2 px-1 pb-2"><Icons.Peminjaman /><h1 className="text-lg font-bold text-slate-900">Daftar Peminjaman</h1></div>
-      {errorMsg && <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{errorMsg}</div>}
+    <div className="min-h-full space-y-4 pb-8 text-slate-800">
+      <div className="flex items-center gap-2.5 px-1 pb-1">
+        <Icons.Peminjaman />
+        <h1 className="text-xl font-bold text-slate-900">Daftar Peminjaman</h1>
+      </div>
+      {errorMsg && <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">{errorMsg}</div>}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_2px_5px_rgba(15,23,42,0.1)]">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1.1fr_1.1fr_auto]">
-          <label className="text-[10px] font-semibold uppercase text-slate-500">Asal Ruang<select value={roomFilter} onChange={event => { setRoomFilter(event.target.value); setPage(1); }} className="mt-1 h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-xs font-normal normal-case text-slate-700 outline-none focus:border-emerald-600"><option value="all">Semua Ruang</option>{rooms.map(room => <option key={room} value={room}>{room}</option>)}</select></label>
-          <label className="text-[10px] font-semibold uppercase text-slate-500">Status Berkas<select value={statusFilter} onChange={event => { setStatusFilter(event.target.value); setPage(1); }} className="mt-1 h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-xs font-normal normal-case text-slate-700 outline-none focus:border-emerald-600"><option value="all">Semua Status</option><option value="DIPINJAM">Aktif</option><option value="TERLAMBAT">Jatuh Tempo</option><option value="DIKEMBALIKAN">Kembali</option></select></label>
-          <label className="text-[10px] font-semibold uppercase text-slate-500">Rentang Tanggal<select value={dateFilter} onChange={event => { setDateFilter(event.target.value); setPage(1); }} className="mt-1 h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-xs font-normal normal-case text-slate-700 outline-none focus:border-emerald-600"><option value="all">Semua Waktu</option><option value="today">Hari Ini</option></select></label>
-          <label className="text-[10px] font-semibold uppercase text-slate-500">Cari Pasien / No. RM<div className="relative mt-1"><Icons.Search /><input value={search} onChange={event => { setSearch(event.target.value); setPage(1); }} placeholder="Ketik No. RM" className="h-9 w-full rounded-md border border-slate-200 pl-8 pr-3 text-xs font-normal normal-case outline-none placeholder:text-slate-400 focus:border-emerald-600" /></div></label>
-          <button type="button" onClick={resetFilters} className="mt-[17px] flex h-9 items-center justify-center gap-1 rounded-md border border-slate-300 px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50"><span>↻</span>Reset</button>
+      {/* Filter Card */}
+      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_2px_5px_rgba(15,23,42,0.06)]">
+        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.3fr_1.1fr_1.1fr_1.5fr_auto] items-end">
+          {/* 1. Asal Ruang */}
+          <div className="flex flex-col">
+            <label htmlFor="filter-ruang" className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              Asal Ruang
+            </label>
+            <div className="relative">
+              <select
+                id="filter-ruang"
+                value={roomFilter}
+                onChange={event => {
+                  setRoomFilter(event.target.value);
+                  setPage(1);
+                }}
+                className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3.5 pr-8 text-xs font-medium text-slate-700 shadow-sm outline-none transition focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 cursor-pointer"
+              >
+                <option value="all">Semua Ruang</option>
+                {RUANGAN_OPTIONS.map(room => (
+                  <option key={room} value={room}>
+                    {room}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400">
+                <Icons.ChevronDown />
+              </span>
+            </div>
+          </div>
+
+          {/* 2. Status Berkas */}
+          <div className="flex flex-col">
+            <label htmlFor="filter-status" className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              Status Berkas
+            </label>
+            <div className="relative">
+              <select
+                id="filter-status"
+                value={statusFilter}
+                onChange={event => {
+                  setStatusFilter(event.target.value);
+                  setPage(1);
+                }}
+                className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3.5 pr-8 text-xs font-medium text-slate-700 shadow-sm outline-none transition focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 cursor-pointer"
+              >
+                <option value="all">Semua Status</option>
+                <option value="DIPINJAM">Aktif</option>
+                <option value="TERLAMBAT">Jatuh Tempo</option>
+                <option value="DIKEMBALIKAN">Kembali</option>
+              </select>
+              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400">
+                <Icons.ChevronDown />
+              </span>
+            </div>
+          </div>
+
+          {/* 3. Rentang Tanggal */}
+          <div className="flex flex-col">
+            <label htmlFor="filter-date" className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              Rentang Tanggal
+            </label>
+            <div className="relative">
+              <select
+                id="filter-date"
+                value={dateFilter}
+                onChange={event => {
+                  setDateFilter(event.target.value);
+                  setPage(1);
+                }}
+                className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3.5 pr-8 text-xs font-medium text-slate-700 shadow-sm outline-none transition focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 cursor-pointer"
+              >
+                <option value="all">Semua Waktu</option>
+                <option value="today">Hari Ini</option>
+              </select>
+              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400">
+                <Icons.ChevronDown />
+              </span>
+            </div>
+          </div>
+
+          {/* 4. Cari Pasien / No. RM */}
+          <div className="flex flex-col">
+            <label htmlFor="filter-search" className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              Cari Pasien / No. RM
+            </label>
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <Icons.Search />
+              </span>
+              <input
+                id="filter-search"
+                type="text"
+                value={search}
+                onChange={event => {
+                  setSearch(event.target.value);
+                  setPage(1);
+                }}
+                placeholder="Ketik No. RM atau Nama..."
+                className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3.5 text-xs font-medium text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+              />
+            </div>
+          </div>
+
+          {/* 5. Reset Button */}
+          <div className="flex flex-col justify-end">
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 cursor-pointer shrink-0"
+            >
+              <Icons.Refresh />
+              <span>Reset</span>
+            </button>
+          </div>
         </div>
       </section>
 

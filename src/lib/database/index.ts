@@ -68,6 +68,7 @@ export async function initializeDatabase(): Promise<void> {
     await ensureColumnExists("data_rm", "jenisKelamin", "TEXT");
     await ensureColumnExists("data_rm", "tanggalLahir", "TEXT");
     await ensureColumnExists("data_rm", "alamat", "TEXT");
+    await ensureColumnExists("data_rm", "createdAt", "DATETIME");
     await ensureColumnExists("users", "avatarPath", "TEXT");
 
     for (const [nomorRm, namaPasien] of DEVELOPMENT_RM_SEED) {
