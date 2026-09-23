@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Icons } from "../../components/Icons";
 import { LoadingState } from "../../components/ui/LoadingState";
 import { Modal } from "../../components/ui/Modal";
 import {
+  AllRiwayatRow,
   deletePeminjamanHistory,
-  getRiwayatByRm,
-  RiwayatRmResult,
-  RiwayatTransaksiRow,
+  getAllRiwayat,
   updatePeminjamanHistory,
 } from "../../lib/database/riwayatRmService";
-import { calculateEffectiveStatus } from "../../lib/statusHelper";
+
+import { RUANGAN_OPTIONS } from "../../constants";
 
 function formatDate(value?: string | null) {
   if (!value) return "-";
@@ -17,177 +17,189 @@ function formatDate(value?: string | null) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("id-ID");
 }
 
-function formatPatientSub(jenisKelamin?: string | null, tanggalLahir?: string | null): string {
-  const parts: string[] = [];
-  if (jenisKelamin) {
-    parts.push(jenisKelamin);
-  }
-  if (tanggalLahir) {
-    let birthDate: Date | null = null;
-    if (tanggalLahir.includes("/")) {
-      const p = tanggalLahir.split("/");
-      if (p.length === 3) {
-        const d = parseInt(p[0], 10);
-        const m = parseInt(p[1], 10) - 1;
-        const y = parseInt(p[2], 10);
-        birthDate = new Date(y, m, d);
-      }
-    }
-    if (!birthDate || Number.isNaN(birthDate.getTime())) {
-      birthDate = new Date(tanggalLahir);
-    }
-    if (!Number.isNaN(birthDate.getTime())) {
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      if (age >= 0) {
-        parts.push(`${age} Tahun`);
-      }
-    }
-  }
-  return parts.length > 0 ? parts.join(", ") : "Data Pasien";
-}
-
 function statusBadgeColor(status: string) {
-  if (status === "Terlambat") return "bg-red-100 text-red-700 border border-red-200";
-  if (status === "Dipinjam") return "bg-yellow-100 text-yellow-700 border border-yellow-200";
+  if (status === "TERLAMBAT") return "bg-red-100 text-red-700 border border-red-200";
+  if (status === "DIPINJAM") return "bg-yellow-100 text-yellow-700 border border-yellow-200";
   return "bg-emerald-100 text-emerald-700 border border-emerald-200";
 }
 
-function deriveStatus(transaction: RiwayatTransaksiRow) {
-  const status = calculateEffectiveStatus(
-    transaction.tanggalBerkasKeluar,
-    transaction.tanggalPinjam,
-    transaction.tanggalBerkasKembali
-  );
+function statusLabel(status: string) {
   if (status === "TERLAMBAT") return "Terlambat";
-  if (status === "DIKEMBALIKAN") return "Tepat Waktu";
-  return "Dipinjam";
+  if (status === "DIPINJAM") return "Dipinjam";
+  return "Tepat Waktu";
 }
 
-function statusLabel(transaction: RiwayatTransaksiRow) {
-  const status = deriveStatus(transaction);
-  return status === "Tepat Waktu" ? "Tepat Waktu" : status;
+// ─── Edit/Delete modal types ────────────────────────────────────────────────
+
+interface EditTarget {
+  peminjamanId: number;
+  unit: string;
+  catatan: string | null;
+  nomorRm: string; // untuk refresh setelah edit di mode per-RM
 }
 
-export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?: string; onNavigate: (page: string, nomorRm?: string) => void }) {
-  const [nomorRm, setNomorRm] = useState(initialNomorRm);
-  const [isLoading, setIsLoading] = useState(false);
+export function RiwayatRm({
+  initialNomorRm = "",
+  onNavigate,
+}: {
+  initialNomorRm?: string;
+  onNavigate: (page: string, nomorRm?: string) => void;
+}) {
+  // ── State utama ──────────────────────────────────────────────────────────
+  const [allData, setAllData] = useState<AllRiwayatRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
-  const [data, setData] = useState<RiwayatRmResult | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<RiwayatTransaksiRow | null>(null);
-  const [pendingEdit, setPendingEdit] = useState<RiwayatTransaksiRow | null>(null);
+
+  // ── Filter / Search ──────────────────────────────────────────────────────
+  const [searchInput, setSearchInput] = useState(initialNomorRm || "");
+  const [appliedSearch, setAppliedSearch] = useState(initialNomorRm || "");
+  const [filterUnit, setFilterUnit] = useState("");
+
+  // ── Pagination ───────────────────────────────────────────────────────────
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
+  // ── Modal states ─────────────────────────────────────────────────────────
+  const [pendingDelete, setPendingDelete] = useState<number | null>(null); // peminjamanId
+  const [pendingEdit, setPendingEdit] = useState<EditTarget | null>(null);
   const [editUnit, setEditUnit] = useState("");
   const [editCatatan, setEditCatatan] = useState("");
-  const [showNotFound, setShowNotFound] = useState(false);
-  const [page, setPage] = useState(1);
-  const pageSize = 5;
 
-  const searchHistory = async (value: string) => {
-    const trimmed = value.trim();
+  // ── Load semua data ──────────────────────────────────────────────────────
+  const loadAll = useCallback(async (search?: string) => {
     setIsLoading(true);
     setErrorMsg("");
-    setShowNotFound(false);
-    setPage(1);
-
     try {
-      if (!trimmed) {
-        setData(null);
-        setShowNotFound(true);
-        return;
-      }
-
-      const result = await getRiwayatByRm(trimmed);
-      setData(result);
+      const rows = await getAllRiwayat(search);
+      setAllData(rows);
+      setPage(1);
     } catch (err: unknown) {
-      setData(null);
-      setShowNotFound(true);
-      setErrorMsg((err as Error).message || "Riwayat peminjaman gagal dimuat.");
+      setErrorMsg((err as Error).message || "Gagal memuat riwayat.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleSearch = async (event: React.FormEvent) => {
-    event.preventDefault();
-    await searchHistory(nomorRm);
-  };
-
+  // Load saat mount & saat appliedSearch berubah
   useEffect(() => {
-    if (initialNomorRm) {
-      void Promise.resolve().then(() => searchHistory(initialNomorRm));
-    }
-  }, [initialNomorRm]);
+    const search = appliedSearch || undefined;
+    (async () => { await loadAll(search); })().catch(console.error);
+  }, [loadAll, appliedSearch]);
+
+
+  // initialNomorRm sudah di-set sebagai initial state di useState di atas.
+  // Jika prop berubah dari luar, update lewat handleSearch bukan setState-in-effect.
+
+
+  // ── Filtered data (client-side filter tambahan untuk unit) ───────────────
+  const filteredData = filterUnit
+    ? allData.filter((r) => r.unit === filterUnit)
+    : allData;
+
+  // ── Pagination ───────────────────────────────────────────────────────────
+  const totalItems = filteredData.length;
+  const pageCount = Math.max(1, Math.ceil(totalItems / pageSize));
+  const visibleRows = filteredData.slice((page - 1) * pageSize, page * pageSize);
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAppliedSearch(searchInput.trim());
+    setPage(1);
+  };
+
+  const handleReset = () => {
+    setSearchInput("");
+    setAppliedSearch("");
+    setFilterUnit("");
+    setPage(1);
+  };
 
   const handleDeleteConfirm = async () => {
-    if (!pendingDelete || !data) return;
+    if (!pendingDelete) return;
     try {
-      await deletePeminjamanHistory(pendingDelete.peminjamanId);
+      await deletePeminjamanHistory(pendingDelete);
       setPendingDelete(null);
-      await searchHistory(data.pasien.nomorRm);
+      await loadAll(appliedSearch || undefined);
     } catch (err: unknown) {
-      setErrorMsg((err as Error).message || "Gagal menghapus riwayat peminjaman.");
+      setErrorMsg((err as Error).message || "Gagal menghapus riwayat.");
       setPendingDelete(null);
     }
   };
 
   const handleEditSave = async () => {
-    if (!pendingEdit || !data) return;
+    if (!pendingEdit) return;
     try {
       await updatePeminjamanHistory(pendingEdit.peminjamanId, editUnit, editCatatan || null);
       setPendingEdit(null);
-      await searchHistory(data.pasien.nomorRm);
+      await loadAll(appliedSearch || undefined);
     } catch (err: unknown) {
-      setErrorMsg((err as Error).message || "Gagal memperbarui riwayat peminjaman.");
+      setErrorMsg((err as Error).message || "Gagal memperbarui riwayat.");
       setPendingEdit(null);
     }
   };
 
-  const totalItems = data?.transaksi.length || 0;
-  const pageCount = Math.max(1, Math.ceil(totalItems / pageSize));
-  const visibleRows = data?.transaksi.slice((page - 1) * pageSize, page * pageSize) || [];
 
   return (
     <div className="min-h-full space-y-4 pb-8 text-slate-800">
       <div className="px-1">
         <h1 className="text-xl font-bold text-slate-900">Riwayat RM</h1>
-        <p className="mt-1 text-xs text-slate-500">Daftar rekam medis yang pernah dipinjam</p>
+        <p className="mt-1 text-xs text-slate-500">
+          Seluruh riwayat transaksi peminjaman dan pengembalian rekam medis.
+        </p>
       </div>
 
+      {/* ─── Filter & Search ─── */}
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <form onSubmit={handleSearch} className="flex flex-col gap-2 sm:flex-row sm:items-end">
-          <label className="flex-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+        <form onSubmit={handleSearch} className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
+          {/* Search input */}
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
             Pencarian
             <div className="relative mt-1">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
                 <Icons.Search />
               </span>
               <input
-                value={nomorRm}
-                onChange={(event) => setNomorRm(event.target.value)}
-                placeholder="00-24-91-82"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Nomor RM / Nama Pasien / Peminjam"
                 disabled={isLoading}
                 className="h-10 w-full rounded-md border border-slate-300 bg-white pl-9 pr-3 text-xs outline-none focus:border-emerald-600"
               />
             </div>
           </label>
 
+          {/* Filter unit */}
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+            Asal Ruang
+            <select
+              value={filterUnit}
+              onChange={(e) => { setFilterUnit(e.target.value); setPage(1); }}
+              className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-xs font-normal normal-case outline-none focus:border-emerald-600"
+            >
+              <option value="">Semua Ruang</option>
+              {RUANGAN_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+          </label>
+
+          {/* Cari */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="mt-[17px] flex h-10 items-center justify-center gap-1 rounded-md bg-emerald-700 px-4 text-xs font-semibold text-white disabled:opacity-50 hover:bg-emerald-800"
+          >
+            <Icons.Search /> Cari
+          </button>
+
+          {/* Reset */}
           <button
             type="button"
-            onClick={() => {
-              setNomorRm("");
-              setData(null);
-              setErrorMsg("");
-              setShowNotFound(false);
-              setPage(1);
-            }}
-            className="flex h-10 items-center justify-center gap-1 rounded-md border border-slate-300 px-4 text-xs font-semibold hover:bg-slate-50"
+            onClick={handleReset}
+            className="mt-[17px] flex h-10 items-center justify-center gap-1 rounded-md border border-slate-300 px-4 text-xs font-semibold hover:bg-slate-50"
           >
-            <span>↻</span>
-            Reset
+            <span>↻</span> Reset
           </button>
         </form>
       </section>
@@ -198,164 +210,172 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
         </div>
       )}
 
-      {isLoading && <LoadingState message="Mencari riwayat RM..." />}
+      {isLoading && <LoadingState message="Memuat riwayat RM..." />}
 
-      {!isLoading && data && (
-        <>
-          <section className="flex flex-col items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3 shadow-sm sm:flex-row sm:items-center">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-pink-200 to-pink-100 text-sm font-bold text-pink-700">
-                {data.pasien.namaPasien.slice(0, 2).toUpperCase()}
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900">{data.pasien.namaPasien}</h2>
-                <p className="text-[10px] text-slate-500">
-                  {formatPatientSub(data.pasien.jenisKelamin, data.pasien.tanggalLahir)}
-                </p>
-              </div>
-            </div>
+      {!isLoading && (
+        <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between px-5 py-4">
+            <h2 className="text-sm font-bold">Daftar Riwayat Berkas RM</h2>
+            <span className="text-[10px] text-slate-500">
+              {totalItems === 0
+                ? "Menampilkan 0 data"
+                : `Menampilkan ${(page - 1) * pageSize + 1} – ${Math.min(page * pageSize, totalItems)} dari ${totalItems} data`}
+            </span>
+          </div>
 
-            <button
-              type="button"
-              onClick={() => onNavigate("peminjaman-baru", data.pasien.nomorRm)}
-              className="rounded-md bg-emerald-600 px-4 py-2 text-[11px] font-semibold text-white shadow-sm transition hover:bg-emerald-700"
-            >
-              + Ajukan Peminjaman
-            </button>
-          </section>
+          <div className="overflow-x-auto">
+            <table className="min-w-[1100px] w-full text-left text-[10px]">
+              <thead className="bg-slate-50 text-[9px] uppercase text-slate-500">
+                <tr>
+                  <th className="px-4 py-3">No.</th>
+                  <th className="px-3 py-3">Nomor</th>
+                  <th className="px-3 py-3">Nama Pasien</th>
+                  <th className="px-3 py-3">Asal Ruang</th>
+                  <th className="px-3 py-3">Peminjam</th>
+                  <th className="px-3 py-3">Tanggal Pinjam</th>
+                  <th className="px-3 py-3">Tanggal Kembali</th>
+                  <th className="px-3 py-3">Kondisi Berkas</th>
+                  <th className="px-3 py-3">Keperluan</th>
+                  <th className="px-3 py-3">Status</th>
+                  <th className="px-3 py-3">Aksi</th>
+                </tr>
+              </thead>
 
-          <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between px-5 py-4">
-              <h2 className="text-sm font-bold">Daftar Riwayat Berkas RM</h2>
-              <span className="text-[10px] text-slate-500">
-                {totalItems === 0
-                  ? "Menampilkan 0 data"
-                  : `Menampilkan ${(page - 1) * pageSize + 1} - ${Math.min(page * pageSize, totalItems)} dari ${totalItems} data`}
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="min-w-[980px] w-full text-left text-[10px]">
-                <thead className="bg-slate-50 text-[9px] uppercase text-slate-500">
+              <tbody className="divide-y divide-slate-100">
+                {totalItems === 0 ? (
                   <tr>
-                    <th className="px-4 py-3">No</th>
-                    <th className="px-3 py-3">Asal Ruang</th>
-                    <th className="px-3 py-3">Peminjam</th>
-                    <th className="px-3 py-3">Tanggal Pinjam</th>
-                    <th className="px-3 py-3">Tanggal Kembali</th>
-                    <th className="px-3 py-3">Kondisi Berkas</th>
-                    <th className="px-3 py-3">Keperluan</th>
-                    <th className="px-3 py-3">Status</th>
-                    <th className="px-3 py-3">Aksi</th>
+                    <td colSpan={11} className="px-4 py-10 text-center text-slate-400">
+                      {appliedSearch
+                        ? `Tidak ada riwayat yang cocok dengan pencarian "${appliedSearch}".`
+                        : "Belum ada riwayat transaksi."}
+                    </td>
                   </tr>
-                </thead>
+                ) : (
+                  visibleRows.map((row: AllRiwayatRow, index: number) => {
+                    const badge = statusBadgeColor(row.statusPeminjaman);
+                    const label = statusLabel(row.statusPeminjaman);
+                    return (
+                      <tr key={row.peminjamanId} className="h-14 hover:bg-slate-50">
+                        <td className="px-4 text-slate-700">{(page - 1) * pageSize + index + 1}</td>
+                        <td className="px-3 font-semibold text-emerald-700">{row.nomorRm}</td>
+                        <td className="px-3 text-slate-700">{row.namaPasien}</td>
+                        <td className="px-3">
+                          <span className="rounded bg-slate-100 px-2 py-1 font-semibold text-slate-700">
+                            {row.unit}
+                          </span>
+                        </td>
+                        <td className="px-3 text-slate-700">{row.peminjamName}</td>
+                        <td className="px-3 text-slate-500">{formatDate(row.tanggalPinjam)}</td>
+                        <td className="px-3 text-slate-500">{formatDate(row.tanggalBerkasKembali)}</td>
+                        <td className="px-3 text-slate-700">
+                          {row.kondisiBerkas === "RUSAK"
+                            ? "Tidak Lengkap"
+                            : row.kondisiBerkas === "BAIK"
+                            ? "Lengkap"
+                            : "-"}
+                        </td>
+                        <td className="px-3 text-slate-700">{row.catatan || "-"}</td>
+                        <td className="px-3">
+                          <span className={`inline-flex rounded-full px-2 py-1 text-[9px] font-semibold ${badge}`}>
+                            {label}
+                          </span>
+                        </td>
+                        <td className="px-3">
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              title="Lihat detail RM"
+                              className="flex h-7 w-7 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
+                              onClick={() => onNavigate("riwayat-rm", row.nomorRm)}
+                            >
+                              🔍
+                            </button>
+                            <button
+                              type="button"
+                              title="Edit data"
+                              className="flex h-7 w-7 items-center justify-center rounded-md border border-yellow-200 bg-yellow-100 text-yellow-700 transition hover:bg-yellow-200"
+                              onClick={() => {
+                                setPendingEdit({
+                                  peminjamanId: row.peminjamanId,
+                                  unit: row.unit,
+                                  catatan: row.catatan,
+                                  nomorRm: row.nomorRm,
+                                });
+                                setEditUnit(row.unit);
+                                setEditCatatan(row.catatan || "");
+                              }}
+                            >
+                              ✎
+                            </button>
+                            <button
+                              type="button"
+                              title="Hapus data"
+                              className="flex h-7 w-7 items-center justify-center rounded-md border border-red-200 bg-red-100 text-red-600 transition hover:bg-red-200"
+                              onClick={() => setPendingDelete(row.peminjamanId)}
+                            >
+                              🗑
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
 
-                <tbody className="divide-y divide-slate-100">
-                  {totalItems === 0 ? (
-                    <tr>
-                      <td colSpan={9} className="px-4 py-10 text-center text-slate-400">
-                        Belum ada riwayat peminjaman.
-                      </td>
-                    </tr>
-                  ) : (
-                    visibleRows.map((transaction, index) => {
-                      const status = deriveStatus(transaction);
-                      const badgeClass = statusBadgeColor(status === "Tepat Waktu" ? "Tepat Waktu" : status);
-
-                      return (
-                        <tr key={transaction.peminjamanId} className="h-14 hover:bg-slate-50">
-                          <td className="px-4 text-slate-700">{(page - 1) * pageSize + index + 1}</td>
-                          <td className="px-3"><span className="rounded bg-slate-100 px-2 py-1 font-semibold text-slate-700">{transaction.unit}</span></td>
-                          <td className="px-3 text-slate-700">{transaction.peminjamName}</td>
-                          <td className="px-3 text-slate-500">{formatDate(transaction.tanggalPinjam)}</td>
-                          <td className="px-3 text-slate-500">{formatDate(transaction.tanggalBerkasKembali)}</td>
-                          <td className="px-3 text-slate-700">{transaction.kondisiBerkas === "RUSAK" ? "Tidak Lengkap" : transaction.kondisiBerkas === "BAIK" ? "Lengkap" : "-"}</td>
-                          <td className="px-3 text-slate-700">{transaction.catatan || "-"}</td>
-                          <td className="px-3">
-                            <span className={`inline-flex rounded-full px-2 py-1 text-[9px] font-semibold ${badgeClass}`}>
-                              {statusLabel(transaction)}
-                            </span>
-                          </td>
-                          <td className="px-3">
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                title="Edit data"
-                                className="flex h-7 w-7 items-center justify-center rounded-md border border-yellow-200 bg-yellow-100 text-yellow-700 transition hover:bg-yellow-200"
-                                onClick={() => {
-                                  setPendingEdit(transaction);
-                                  setEditUnit(transaction.unit);
-                                  setEditCatatan(transaction.catatan || "");
-                                }}
-                              >
-                                ✎
-                              </button>
-                              <button
-                                type="button"
-                                title="Hapus data"
-                                className="flex h-7 w-7 items-center justify-center rounded-md border border-red-200 bg-red-100 text-red-600 transition hover:bg-red-200"
-                                onClick={() => setPendingDelete(transaction)}
-                              >
-                                🗑
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex items-center justify-between border-t border-slate-200 px-5 py-3 text-[10px] text-slate-500">
-              <span>Halaman {page} dari {pageCount} (Total {totalItems} data)</span>
-              {pageCount > 1 && (
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    disabled={page === 1}
-                    onClick={() => setPage((p) => p - 1)}
-                    className="rounded border border-slate-200 px-2 py-1 text-slate-600 disabled:opacity-40"
-                  >
-                    Sebelumnya
-                  </button>
-                  {Array.from({ length: pageCount }, (_, i) => i + 1).map((pageNum) => (
-                    <button
-                      key={pageNum}
-                      type="button"
-                      onClick={() => setPage(pageNum)}
-                      className={`h-7 w-7 rounded-md border text-xs font-semibold ${page === pageNum ? "border-emerald-700 bg-emerald-600 text-white" : "border-slate-200 bg-white text-slate-600"}`}
-                    >
-                      {pageNum}
-                    </button>
+          {/* ─── Pagination ─── */}
+          <div className="flex items-center justify-between border-t border-slate-200 px-5 py-3 text-[10px] text-slate-500">
+            <span>
+              Halaman {page} dari {pageCount} (Total {totalItems} data)
+            </span>
+            {pageCount > 1 && (
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => p - 1)}
+                  className="rounded border border-slate-200 px-2 py-1 text-slate-600 disabled:opacity-40"
+                >
+                  Sebelumnya
+                </button>
+                {Array.from({ length: pageCount }, (_, i) => i + 1)
+                  .filter((n) => n === 1 || n === pageCount || Math.abs(n - page) <= 2)
+                  .map((pageNum, i, arr) => (
+                    <span key={pageNum} className="contents">
+                      {i > 0 && arr[i - 1] !== pageNum - 1 && (
+                        <span className="px-1 text-slate-400">…</span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setPage(pageNum)}
+                        className={`h-7 w-7 rounded-md border text-xs font-semibold ${
+                          page === pageNum
+                            ? "border-emerald-700 bg-emerald-600 text-white"
+                            : "border-slate-200 bg-white text-slate-600"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    </span>
                   ))}
-                  <button
-                    type="button"
-                    disabled={page === pageCount}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="rounded border border-slate-200 px-2 py-1 text-slate-600 disabled:opacity-40"
-                  >
-                    Selanjutnya
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        </>
+
+                <button
+                  type="button"
+                  disabled={page === pageCount}
+                  onClick={() => setPage((p) => p + 1)}
+                  className="rounded border border-slate-200 px-2 py-1 text-slate-600 disabled:opacity-40"
+                >
+                  Selanjutnya
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
       )}
 
-      <Modal
-        isOpen={showNotFound}
-        onClose={() => setShowNotFound(false)}
-        onConfirm={() => setShowNotFound(false)}
-        title="Data Tidak Ditemukan"
-        description="Data Tidak Terdaftar di Sistem atau Belum Memiliki Riwayat Peminjaman dan Pengembalian !"
-        confirmText="Kembali"
-        cancelText={null}
-        variant="notfound"
-      />
-
+      {/* ─── Modal Hapus ─── */}
       <Modal
         isOpen={Boolean(pendingDelete)}
         onClose={() => setPendingDelete(null)}
@@ -367,6 +387,7 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
         variant="delete"
       />
 
+      {/* ─── Modal Edit ─── */}
       <Modal
         isOpen={Boolean(pendingEdit)}
         onClose={() => setPendingEdit(null)}
@@ -402,4 +423,3 @@ export function RiwayatRm({ initialNomorRm = "", onNavigate }: { initialNomorRm?
     </div>
   );
 }
-

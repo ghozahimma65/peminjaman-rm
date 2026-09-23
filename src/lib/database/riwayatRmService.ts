@@ -1,6 +1,7 @@
 import { getDb } from "./index";
 import { calculateEffectiveStatus } from "../statusHelper";
 
+
 export interface DataRmInfo {
   nomorRm: string;
   namaPasien: string;
@@ -34,6 +35,28 @@ export interface RiwayatTransaksiRow {
 export interface RiwayatRmResult {
   pasien: DataRmInfo;
   transaksi: RiwayatTransaksiRow[];
+}
+
+/**
+ * Row untuk tampilan seluruh riwayat (tanpa filter per-RM)
+ */
+export interface AllRiwayatRow {
+  peminjamanId: number;
+  nomorRm: string;
+  namaPasien: string;
+  tanggalPinjam: string;
+  tanggalBerkasKeluar: string | null;
+  unit: string;
+  jilid: string | null;
+  catatan: string | null;
+  kondisiBerkas: "BAIK" | "RUSAK" | null;
+  peminjamId: number;
+  peminjamName: string;
+  pengembalianId: number | null;
+  tanggalBerkasKembali: string | null;
+  dikembalikanOlehId: number | null;
+  dikembalikanOlehName: string | null;
+  statusPeminjaman: string;
 }
 
 /**
@@ -116,3 +139,57 @@ export async function updatePeminjamanHistory(peminjamanId: number, unit: string
   );
 }
 
+/**
+ * Mengambil seluruh riwayat transaksi dari semua RM.
+ * Optional: filter search berdasarkan nomorRm, namaPasien, atau peminjam.
+ */
+export async function getAllRiwayat(search?: string): Promise<AllRiwayatRow[]> {
+  const db = await getDb();
+
+  let query = `
+    SELECT
+      p.id as peminjamanId,
+      p.nomorRm,
+      p.namaPasien,
+      p.tanggalPinjam,
+      p.tanggalBerkasKeluar,
+      p.unit,
+      p.jilid,
+      p.catatan,
+      p.peminjamId,
+      p.namaPeminjam,
+      u1.name as operatorPeminjamName,
+      pg.id as pengembalianId,
+      pg.tanggalBerkasKembali,
+      pg.kondisiBerkas,
+      pg.dikembalikanOlehId,
+      u2.name as dikembalikanOlehName
+    FROM peminjaman p
+    LEFT JOIN pengembalian pg ON p.id = pg.peminjamanId
+    LEFT JOIN users u1 ON p.peminjamId = u1.id
+    LEFT JOIN users u2 ON pg.dikembalikanOlehId = u2.id
+  `;
+
+  const params: string[] = [];
+
+  if (search && search.trim()) {
+    const like = `%${search.trim()}%`;
+    params.push(like, like, like, like);
+    query += `
+    WHERE
+      p.nomorRm LIKE $1
+      OR p.namaPasien LIKE $2
+      OR p.namaPeminjam LIKE $3
+      OR u1.name LIKE $4
+    `;
+  }
+
+  query += ` ORDER BY p.tanggalPinjam DESC`;
+
+  const rawRows = await db.select<(AllRiwayatRow & { namaPeminjam?: string | null; operatorPeminjamName?: string })[]>(query, params);
+  return rawRows.map(r => ({
+    ...r,
+    peminjamName: r.namaPeminjam || r.operatorPeminjamName || 'Petugas',
+    statusPeminjaman: calculateEffectiveStatus(r.tanggalBerkasKeluar, r.tanggalPinjam, r.tanggalBerkasKembali)
+  }));
+}
