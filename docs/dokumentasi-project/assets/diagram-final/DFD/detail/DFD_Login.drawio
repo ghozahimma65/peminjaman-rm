@@ -1,0 +1,98 @@
+<mxfile host="Electron" version="21.0.0">
+  <diagram id="Page-1" name="Diagram">
+    <mxGraphModel dx="1040" dy="580" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1040" pageHeight="580" background="#ffffff">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="e_user" value="[Petugas / Super Admin]
+Pengguna Sistem" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontStyle=1;fontSize=12;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="60" y="180" width="180" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_1" value="PROSES 1.1
+
+Validasi Kredensial
+(Format NIP &amp; Password)" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="320" y="110" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_2" value="PROSES 1.2
+
+Pencarian Pengguna
+(SELECT WHERE nip=$1)" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="320" y="210" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_3" value="PROSES 1.3
+
+Verifikasi Hash Bcrypt
+(bcrypt.compare())" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="320" y="310" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_4" value="PROSES 1.4
+
+Pencatatan Log Audit
+(INSERT login_logs)" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="320" y="410" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_5" value="PROSES 1.5
+
+Penerbitan Sesi Aktif
+(AuthContext session)" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="640" y="210" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ds1" value="D1: users" style="shape=partialRectangle;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#15803d;strokeWidth=2;fontStyle=1;fontSize=12;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="680" y="110" width="200" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ds2" value="D2: login_logs" style="shape=partialRectangle;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#15803d;strokeWidth=2;fontStyle=1;fontSize=12;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="680" y="410" width="200" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed1" value="NIP &amp; Password" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="e_user" target="p1_1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="220" as="exitPoint"/>
+            <mxPoint x="320" y="140" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed2" value="Input Bersih" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p1_1" target="p1_2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="170" as="exitPoint"/>
+            <mxPoint x="440" y="210" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed3" value="Kueri Akun" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p1_2" target="ds1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="240" as="exitPoint"/>
+            <mxPoint x="680" y="130" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed4" value="Data User Ditemukan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p1_2" target="p1_3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="270" as="exitPoint"/>
+            <mxPoint x="440" y="310" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed5" value="Status (SUCCESS/FAIL)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p1_3" target="p1_4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="370" as="exitPoint"/>
+            <mxPoint x="440" y="410" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed6" value="Tulis Log" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p1_4" target="ds2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="440" as="exitPoint"/>
+            <mxPoint x="680" y="430" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed7" value="Password Cocok" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p1_3" target="p1_5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="330" as="exitPoint"/>
+            <mxPoint x="640" y="240" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed8" value="Objek Sesi Aktif" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p1_5" target="e_user">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="640" y="250" as="exitPoint"/>
+            <mxPoint x="240" y="340" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

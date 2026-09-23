@@ -39,6 +39,31 @@ export async function createDataRm(
 }
 
 /**
+ * Memperbarui data master pasien RM yang sudah ada
+ */
+export async function updateDataRm(
+  nomorRm: string,
+  namaPasien: string,
+  nik: string,
+  jenisKelamin: string,
+  tanggalLahir: string,
+  alamat: string,
+): Promise<void> {
+  validateNik(nik);
+  const db = await getDb();
+  await db.execute(
+    "UPDATE data_rm SET namaPasien = $1, nik = $2, jenisKelamin = $3, tanggalLahir = $4, alamat = $5 WHERE nomorRm = $6",
+    [namaPasien, nik, jenisKelamin, tanggalLahir, alamat, nomorRm]
+  );
+  // Sinkronkan namaPasien di transaksi peminjaman agar tetap konsisten
+  await db.execute(
+    "UPDATE peminjaman SET namaPasien = $1 WHERE nomorRm = $2",
+    [namaPasien, nomorRm]
+  );
+}
+
+
+/**
  * Cari data RM berdasarkan nomor RM
  */
 export async function getRmByNomor(nomorRm: string): Promise<DataRmRow | null> {

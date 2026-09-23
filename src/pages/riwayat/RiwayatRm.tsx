@@ -17,6 +17,56 @@ function formatDate(value?: string | null) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("id-ID");
 }
 
+function formatDateCard(dateStr?: string | null): string {
+  if (!dateStr) return "-";
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+function formatTanggalKembaliWithDuration(tanggalPinjam?: string | null, tanggalKembali?: string | null): React.ReactNode {
+  if (!tanggalKembali) return "-";
+  const formattedDate = formatDateCard(tanggalKembali);
+  if (!tanggalPinjam) return formattedDate;
+  const pinjamTime = new Date(tanggalPinjam).getTime();
+  const kembaliTime = new Date(tanggalKembali).getTime();
+  if (Number.isNaN(pinjamTime) || Number.isNaN(kembaliTime)) return formattedDate;
+  const diffDays = Math.max(1, Math.round((kembaliTime - pinjamTime) / (1000 * 60 * 60 * 24)));
+  return (
+    <span>
+      {formattedDate} <span className="text-amber-600 font-medium">({diffDays} hari)</span>
+    </span>
+  );
+}
+
+function renderCardStatusBadge(status: string) {
+  if (status === "TERLAMBAT") {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-600 border border-red-200">
+        <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+        Terlambat
+      </span>
+    );
+  }
+  if (status === "DIPINJAM") {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 border border-amber-200">
+        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+        Dipinjam
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 border border-emerald-200">
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+      Tepat Waktu
+    </span>
+  );
+}
+
 function statusBadgeColor(status: string) {
   if (status === "TERLAMBAT") return "bg-red-100 text-red-700 border border-red-200";
   if (status === "DIPINJAM") return "bg-yellow-100 text-yellow-700 border border-yellow-200";
@@ -40,10 +90,9 @@ interface EditTarget {
 
 export function RiwayatRm({
   initialNomorRm = "",
-  onNavigate,
 }: {
   initialNomorRm?: string;
-  onNavigate: (page: string, nomorRm?: string) => void;
+  onNavigate?: (page: string, nomorRm?: string) => void;
 }) {
   // ── State utama ──────────────────────────────────────────────────────────
   const [allData, setAllData] = useState<AllRiwayatRow[]>([]);
@@ -55,6 +104,9 @@ export function RiwayatRm({
   const [appliedSearch, setAppliedSearch] = useState(initialNomorRm || "");
   const [filterUnit, setFilterUnit] = useState("");
 
+  // ── Modal Detail Card State (Requirement 5) ─────────────────────────────
+  const [viewRow, setViewRow] = useState<AllRiwayatRow | null>(null);
+
   // ── Pagination ───────────────────────────────────────────────────────────
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -64,6 +116,7 @@ export function RiwayatRm({
   const [pendingEdit, setPendingEdit] = useState<EditTarget | null>(null);
   const [editUnit, setEditUnit] = useState("");
   const [editCatatan, setEditCatatan] = useState("");
+
 
   // ── Load semua data ──────────────────────────────────────────────────────
   const loadAll = useCallback(async (search?: string) => {
@@ -87,8 +140,8 @@ export function RiwayatRm({
   }, [loadAll, appliedSearch]);
 
 
-  // initialNomorRm sudah di-set sebagai initial state di useState di atas.
-  // Jika prop berubah dari luar, update lewat handleSearch bukan setState-in-effect.
+
+
 
 
   // ── Filtered data (client-side filter tambahan untuk unit) ───────────────
@@ -197,9 +250,9 @@ export function RiwayatRm({
           <button
             type="button"
             onClick={handleReset}
-            className="mt-[17px] flex h-10 items-center justify-center gap-1 rounded-md border border-slate-300 px-4 text-xs font-semibold hover:bg-slate-50"
+            className="mt-[17px] flex h-10 items-center justify-center gap-1.5 rounded-md border border-slate-300 px-4 text-xs font-semibold hover:bg-slate-50 cursor-pointer"
           >
-            <span>↻</span> Reset
+            <Icons.Refresh /> Reset
           </button>
         </form>
       </section>
@@ -285,15 +338,15 @@ export function RiwayatRm({
                             <button
                               type="button"
                               title="Lihat detail RM"
-                              className="flex h-7 w-7 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
-                              onClick={() => onNavigate("riwayat-rm", row.nomorRm)}
+                              className="flex h-7 w-7 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100 cursor-pointer"
+                              onClick={() => setViewRow(row)}
                             >
-                              🔍
+                              <Icons.Eye />
                             </button>
                             <button
                               type="button"
                               title="Edit data"
-                              className="flex h-7 w-7 items-center justify-center rounded-md border border-yellow-200 bg-yellow-100 text-yellow-700 transition hover:bg-yellow-200"
+                              className="flex h-7 w-7 items-center justify-center rounded-md border border-yellow-200 bg-yellow-100 text-yellow-700 transition hover:bg-yellow-200 cursor-pointer"
                               onClick={() => {
                                 setPendingEdit({
                                   peminjamanId: row.peminjamanId,
@@ -305,15 +358,15 @@ export function RiwayatRm({
                                 setEditCatatan(row.catatan || "");
                               }}
                             >
-                              ✎
+                              <Icons.Edit />
                             </button>
                             <button
                               type="button"
                               title="Hapus data"
-                              className="flex h-7 w-7 items-center justify-center rounded-md border border-red-200 bg-red-100 text-red-600 transition hover:bg-red-200"
+                              className="flex h-7 w-7 items-center justify-center rounded-md border border-red-200 bg-red-100 text-red-600 transition hover:bg-red-200 cursor-pointer"
                               onClick={() => setPendingDelete(row.peminjamanId)}
                             >
-                              🗑
+                              <Icons.Trash />
                             </button>
                           </div>
                         </td>
@@ -420,6 +473,93 @@ export function RiwayatRm({
           </div>
         }
       />
+
+      {/* ─── Modal Informasi RM (Reference UI Card) ─── */}
+      {viewRow && (
+        <div
+          role="presentation"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[2px]"
+          onClick={() => setViewRow(null)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl transition-all border border-slate-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header: Green Icon + Title */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <Icons.Info />
+                </span>
+                <h3 className="text-sm font-bold text-slate-900">Informasi RM</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewRow(null)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer text-lg font-bold leading-none"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Content List */}
+            <dl className="mt-4 space-y-3.5 text-xs">
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Nomor</dt>
+                <dd className="font-mono font-bold text-slate-800 tracking-wider">{viewRow.nomorRm}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Nama Pasien</dt>
+                <dd className="font-semibold text-slate-900 text-right">{viewRow.namaPasien}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Unit Peminjam</dt>
+                <dd className="font-medium text-slate-700 text-right">{viewRow.unit}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Peminjam</dt>
+                <dd className="font-medium text-slate-700 text-right">{viewRow.peminjamName}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Kondisi Berkas</dt>
+                <dd className="font-medium text-slate-700 text-right">
+                  {viewRow.kondisiBerkas === "RUSAK" ? "Tidak Lengkap" : viewRow.kondisiBerkas === "BAIK" ? "Lengkap" : "-"}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Tanggal Pinjam</dt>
+                <dd className="font-medium text-slate-700 text-right">{formatDateCard(viewRow.tanggalPinjam)}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Tanggal Kembali</dt>
+                <dd className="font-medium text-slate-700 text-right">
+                  {formatTanggalKembaliWithDuration(viewRow.tanggalPinjam, viewRow.tanggalBerkasKembali)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Keperluan</dt>
+                <dd className="max-w-[190px] font-medium text-slate-700 text-right truncate" title={viewRow.catatan || "-"}>
+                  {viewRow.catatan || "-"}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <dt className="text-slate-400">Status</dt>
+                <dd className="text-right">{renderCardStatusBadge(viewRow.statusPeminjaman)}</dd>
+              </div>
+            </dl>
+
+            <div className="mt-5 border-t border-slate-100 pt-3 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setViewRow(null)}
+                className="rounded-lg bg-slate-100 px-5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 600" width="1080" height="600">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap');
+      text { font-family: 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif; }
+    </style>
+  </defs>
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  
+  <!-- Header Title Banner -->
+  <rect x="0" y="0" width="1080" height="60" fill="#f8fafc"/>
+  <line x1="0" y1="60" x2="1080" y2="60" stroke="#e2e8f0" stroke-width="1.5"/>
+  <rect x="24" y="16" width="6" height="28" rx="3" fill="#056839"/>
+  <text x="38" y="32" font-size="16" font-weight="bold" fill="#0f172a">DFD Level 2 — Proses 4.0: Transaksi Pengembalian Berkas RM</text>
+  <text x="38" y="47" font-size="11" fill="#64748b">Rincian pencarian pinjaman aktif, validasi temporal, pencatatan kondisi fisik, dan proteksi rollback</text>
+
+  <!-- Diagram Content -->
+  
+    <g class="dfd-entity">
+      <filter id="shadow_ent_60_200" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="60" y="200" width="180" height="200" rx="6" fill="#f8fafc" stroke="#334155" stroke-width="2" filter="url(#shadow_ent_60_200)"/>
+      <rect x="60" y="200" width="180" height="28" rx="6" fill="#334155"/>
+      <rect x="60" y="220" width="180" height="8" fill="#334155"/>
+      <text x="150.0" y="218" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">Operator Filing</text>
+      <text x="150.0" y="310.0" font-size="13" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle">Petugas Rekam Medis</text>
+    </g>
+    
+    <g class="dfd-process">
+      <filter id="shadow_proc_330_110" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="330" y="110" width="250" height="65" rx="16" fill="#f0fdf4" stroke="#056839" stroke-width="2" filter="url(#shadow_proc_330_110)"/>
+      <path d="M 330 126 A 16 16 0 0 1 346 110 L 564 110 A 16 16 0 0 1 580 126 L 580 136 L 330 136 Z" fill="#056839"/>
+      <text x="455.0" y="128" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES 4.1</text>
+      <text x="455.0" y="150.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Pencarian Pinjaman Aktif</text>
+      <text x="455.0" y="165.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">findActivePeminjamanByRm</text>
+    </g>
+    
+    <g class="dfd-process">
+      <filter id="shadow_proc_330_220" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="330" y="220" width="250" height="65" rx="16" fill="#f0fdf4" stroke="#056839" stroke-width="2" filter="url(#shadow_proc_330_220)"/>
+      <path d="M 330 236 A 16 16 0 0 1 346 220 L 564 220 A 16 16 0 0 1 580 236 L 580 246 L 330 246 Z" fill="#056839"/>
+      <text x="455.0" y="238" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES 4.2</text>
+      <text x="455.0" y="260.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Validasi Integritas Temporal</text>
+      <text x="455.0" y="275.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">returnDate >= referenceDate</text>
+    </g>
+    
+    <g class="dfd-process">
+      <filter id="shadow_proc_330_330" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="330" y="330" width="250" height="65" rx="16" fill="#f0fdf4" stroke="#056839" stroke-width="2" filter="url(#shadow_proc_330_330)"/>
+      <path d="M 330 346 A 16 16 0 0 1 346 330 L 564 330 A 16 16 0 0 1 580 346 L 580 356 L 330 356 Z" fill="#056839"/>
+      <text x="455.0" y="348" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES 4.3</text>
+      <text x="455.0" y="370.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Pemeriksaan Kondisi Berkas</text>
+      <text x="455.0" y="385.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">Evaluasi Fisik 'BAIK' / 'RUSAK'</text>
+    </g>
+    
+    <g class="dfd-process">
+      <filter id="shadow_proc_330_440" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="330" y="440" width="250" height="65" rx="16" fill="#f0fdf4" stroke="#056839" stroke-width="2" filter="url(#shadow_proc_330_440)"/>
+      <path d="M 330 456 A 16 16 0 0 1 346 440 L 564 440 A 16 16 0 0 1 580 456 L 580 466 L 330 466 Z" fill="#056839"/>
+      <text x="455.0" y="458" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES 4.4</text>
+      <text x="455.0" y="480.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Eksekusi Update & Rollback</text>
+      <text x="455.0" y="495.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">UPDATE peminjaman & INSERT kembali</text>
+    </g>
+    
+    <g class="dfd-datastore">
+      <filter id="shadow_ds_710_180" x="-5%" y="-5%" width="110%" height="120%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.06"/>
+      </filter>
+      <!-- Background -->
+      <rect x="710" y="180" width="220" height="45" fill="#ffffff" filter="url(#shadow_ds_710_180)"/>
+      <!-- ID Section -->
+      <rect x="710" y="180" width="42" height="45" fill="#dcfce7" stroke="#15803d" stroke-width="1.5"/>
+      <text x="731" y="207.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#15803d" text-anchor="middle">D4</text>
+      <!-- Store Label Section (Open right side) -->
+      <line x1="710" y1="180" x2="930" y2="180" stroke="#15803d" stroke-width="1.5"/>
+      <line x1="710" y1="225" x2="930" y2="225" stroke="#15803d" stroke-width="1.5"/>
+      <text x="764" y="207.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#0f172a">peminjaman</text>
+    </g>
+    
+    <g class="dfd-datastore">
+      <filter id="shadow_ds_710_380" x="-5%" y="-5%" width="110%" height="120%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.06"/>
+      </filter>
+      <!-- Background -->
+      <rect x="710" y="380" width="220" height="45" fill="#ffffff" filter="url(#shadow_ds_710_380)"/>
+      <!-- ID Section -->
+      <rect x="710" y="380" width="42" height="45" fill="#dcfce7" stroke="#15803d" stroke-width="1.5"/>
+      <text x="731" y="407.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#15803d" text-anchor="middle">D5</text>
+      <!-- Store Label Section (Open right side) -->
+      <line x1="710" y1="380" x2="930" y2="380" stroke="#15803d" stroke-width="1.5"/>
+      <line x1="710" y1="425" x2="930" y2="425" stroke="#15803d" stroke-width="1.5"/>
+      <text x="764" y="407.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#0f172a">pengembalian</text>
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 240 230 L 280 230 L 280 142 L 330 142" fill="none" stroke="#2563eb" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="330,142 324,138 324,146" fill="#2563eb" transform="rotate(0.0, 330, 142)"/>
+      
+        <rect x="211.0" y="166" width="138.0" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="280" y="179" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Input No. RM Kembali</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 580 142 L 710 195" fill="none" stroke="#0284c7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="710,195 704,191 704,199" fill="#0284c7" transform="rotate(22.180344302017236, 710, 195)"/>
+      
+        <rect x="529.5" y="151" width="231.0" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="645" y="164" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Query: Pinjaman Aktif Belum Kembali</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 455 175 L 455 220" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="455,220 449,216 449,224" fill="#059669" transform="rotate(90.0, 455, 220)"/>
+      
+        <rect x="420.5" y="186" width="169.0" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="505" y="199" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Data Peminjaman Ditemukan</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 455 285 L 455 330" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="455,330 449,326 449,334" fill="#059669" transform="rotate(90.0, 455, 330)"/>
+      
+        <rect x="411.9" y="296" width="206.20000000000002" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="515" y="309" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Waktu Kembali Valid (>= Keluar)</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 240 350 L 330 350" fill="none" stroke="#2563eb" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="330,350 324,346 324,354" fill="#2563eb" transform="rotate(0.0, 330, 350)"/>
+      
+        <rect x="175.7" y="331" width="218.6" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="285" y="344" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Pilihan Kondisi: 'BAIK' / 'RUSAK'</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 455 395 L 455 440" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="455,440 449,436 449,444" fill="#059669" transform="rotate(90.0, 455, 440)"/>
+      
+        <rect x="415.5" y="406" width="169.0" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="500" y="419" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Payload Pengembalian Siap</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 580 450 L 660 450 L 660 215 L 710 215" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="710,215 704,211 704,219" fill="#059669" transform="rotate(0.0, 710, 215)"/>
+      
+        <rect x="556.9" y="321" width="206.20000000000002" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="660" y="334" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">1. UPDATE status='DIKEMBALIKAN'</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 580 472 L 710 405" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="710,405 704,401 704,409" fill="#059669" transform="rotate(-27.2658820273404, 710, 405)"/>
+      
+        <rect x="548.1" y="426" width="193.8" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="645" y="439" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">2. INSERT Record Pengembalian</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 330 480 L 200 480 L 200 400" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="200,400 194,396 194,404" fill="#059669" transform="rotate(-90.0, 200, 400)"/>
+      
+        <rect x="145.7" y="461" width="218.6" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="255" y="474" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Konfirmasi Berkas Kembali di Depo</text>
+        
+    </g>
+    
+
+  <!-- Footer Watermark -->
+  <text x="1056" y="588" font-size="9.5" fill="#94a3b8" text-anchor="end">Filing Rekam Medis — RSI Sultan Agung Semarang</text>
+</svg>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 480" width="940" height="480">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap');
+      text { font-family: 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif; }
+    </style>
+  </defs>
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  
+  <!-- Header Title Banner -->
+  <rect x="0" y="0" width="940" height="60" fill="#f8fafc"/>
+  <line x1="0" y1="60" x2="940" y2="60" stroke="#e2e8f0" stroke-width="1.5"/>
+  <rect x="24" y="16" width="6" height="28" rx="3" fill="#056839"/>
+  <text x="38" y="32" font-size="16" font-weight="bold" fill="#0f172a">ERD: Modul Pengguna dan Log Audit (User & Login)</text>
+  <text x="38" y="47" font-size="11" fill="#64748b">Relasi antara tabel users dan login_logs dengan penegakan integritas referensial</text>
+
+  <!-- Diagram Content -->
+  
+    <!-- Table: users -->
+    <g id="table_users">
+      <filter id="shadow_users" x="-5%" y="-5%" width="110%" height="115%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="80" y="110" width="320" height="266" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow_users)"/>
+      <!-- Header -->
+      <path d="M 80 116 A 6 6 0 0 1 86 110 L 394 110 A 6 6 0 0 1 400 116 L 400 152 L 80 152 Z" fill="#056839"/>
+      <text x="94" y="130" font-size="14" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff">users</text>
+      <text x="94" y="144" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#bbf7d0">Data Akun & Hak Akses Pengguna</text>
+      <line x1="80" y1="152" x2="400" y2="152" stroke="#04522d" stroke-width="1.5"/>
+      
+        <rect x="80" y="152" width="320" height="24" fill="#f8fafc"/>
+        <rect x="88" y="155" width="26" height="17" rx="3" fill="#fef3c7"/>
+            <text x="101.0" y="167" font-size="10" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#b45309" text-anchor="middle">PK</text>
+        <text x="122" y="168" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">id</text>
+        <text x="388" y="168" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">INTEGER</text>
+        <line x1="80" y1="176" x2="400" y2="176" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="80" y="176" width="320" height="24" fill="#ffffff"/>
+        <rect x="88" y="179" width="26" height="17" rx="3" fill="#f3e8ff"/>
+            <text x="101.0" y="191" font-size="10" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#7e22ce" text-anchor="middle">UK</text>
+        <text x="122" y="192" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">nip</text>
+        <text x="388" y="192" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">TEXT</text>
+        <line x1="80" y1="200" x2="400" y2="200" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="80" y="200" width="320" height="24" fill="#f8fafc"/>
+        <rect x="88" y="203" width="26" height="17" rx="3" fill="#f3e8ff"/>
+            <text x="101.0" y="215" font-size="10" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#7e22ce" text-anchor="middle">UK</text>
+        <text x="122" y="216" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">email</text>
+        <text x="388" y="216" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">TEXT</text>
+        <line x1="80" y1="224" x2="400" y2="224" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="80" y="224" width="320" height="24" fill="#ffffff"/>
+        
+        <text x="92" y="240" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">passwordHash</text>
+        <text x="388" y="240" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">TEXT</text>
+        <line x1="80" y1="248" x2="400" y2="248" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="80" y="248" width="320" height="24" fill="#f8fafc"/>
+        
+        <text x="92" y="264" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">name</text>
+        <text x="388" y="264" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">TEXT</text>
+        <line x1="80" y1="272" x2="400" y2="272" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="80" y="272" width="320" height="24" fill="#ffffff"/>
+        
+        <text x="92" y="288" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">role</text>
+        <text x="388" y="288" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">TEXT</text>
+        <line x1="80" y1="296" x2="400" y2="296" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="80" y="296" width="320" height="24" fill="#f8fafc"/>
+        
+        <text x="92" y="312" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">avatarPath</text>
+        <text x="388" y="312" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">TEXT</text>
+        <line x1="80" y1="320" x2="400" y2="320" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="80" y="320" width="320" height="24" fill="#ffffff"/>
+        
+        <text x="92" y="336" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">createdAt</text>
+        <text x="388" y="336" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">DATETIME</text>
+        <line x1="80" y1="344" x2="400" y2="344" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="80" y="344" width="320" height="24" fill="#f8fafc"/>
+        
+        <text x="92" y="360" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">updatedAt</text>
+        <text x="388" y="360" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">DATETIME</text>
+        <line x1="80" y1="368" x2="400" y2="368" stroke="#e2e8f0" stroke-width="1"/>
+        
+    </g>
+    
+    <!-- Table: login_logs -->
+    <g id="table_login_logs">
+      <filter id="shadow_login_logs" x="-5%" y="-5%" width="110%" height="115%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="540" y="110" width="320" height="170" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow_login_logs)"/>
+      <!-- Header -->
+      <path d="M 540 116 A 6 6 0 0 1 546 110 L 854 110 A 6 6 0 0 1 860 116 L 860 152 L 540 152 Z" fill="#056839"/>
+      <text x="554" y="130" font-size="14" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff">login_logs</text>
+      <text x="554" y="144" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#bbf7d0">Audit Trail Aktivitas Login</text>
+      <line x1="540" y1="152" x2="860" y2="152" stroke="#04522d" stroke-width="1.5"/>
+      
+        <rect x="540" y="152" width="320" height="24" fill="#f8fafc"/>
+        <rect x="548" y="155" width="26" height="17" rx="3" fill="#fef3c7"/>
+            <text x="561.0" y="167" font-size="10" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#b45309" text-anchor="middle">PK</text>
+        <text x="582" y="168" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">id</text>
+        <text x="848" y="168" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">INTEGER</text>
+        <line x1="540" y1="176" x2="860" y2="176" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="540" y="176" width="320" height="24" fill="#ffffff"/>
+        <rect x="548" y="179" width="26" height="17" rx="3" fill="#dbeafe"/>
+            <text x="561.0" y="191" font-size="10" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#1d4ed8" text-anchor="middle">FK</text>
+        <text x="582" y="192" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">userId</text>
+        <text x="848" y="192" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">INTEGER</text>
+        <line x1="540" y1="200" x2="860" y2="200" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="540" y="200" width="320" height="24" fill="#f8fafc"/>
+        
+        <text x="552" y="216" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">nip</text>
+        <text x="848" y="216" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">TEXT</text>
+        <line x1="540" y1="224" x2="860" y2="224" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="540" y="224" width="320" height="24" fill="#ffffff"/>
+        
+        <text x="552" y="240" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">loginTime</text>
+        <text x="848" y="240" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">DATETIME</text>
+        <line x1="540" y1="248" x2="860" y2="248" stroke="#e2e8f0" stroke-width="1"/>
+        
+        <rect x="540" y="248" width="320" height="24" fill="#f8fafc"/>
+        
+        <text x="552" y="264" font-size="11.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#0f172a">status</text>
+        <text x="848" y="264" font-size="10.5" font-family="'Segoe UI', Arial, sans-serif" fill="#64748b" text-anchor="end">TEXT</text>
+        <line x1="540" y1="272" x2="860" y2="272" stroke="#e2e8f0" stroke-width="1"/>
+        
+    </g>
+    
+    <g class="connector">
+      <path d="M 400 150 L 470 150 L 470 150 L 540 150" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="400" cy="150" r="3.5" fill="#2563eb"/>
+      <polygon points="540,150 534,146 534,154" fill="#2563eb" transform="rotate(0.0, 540, 150)"/>
+      <text x="415" y="144" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#1e293b">1</text>
+      <text x="522" y="144" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#1e293b">0..N</text>
+      
+        <rect x="338.5" y="120" width="263.0" height="20" rx="4" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+        <text x="470" y="134" font-size="10" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#334155" text-anchor="middle">FK: userId -> users.id (1:N, SET NULL)</text>
+        
+    </g>
+    
+
+  <!-- Footer Watermark -->
+  <text x="916" y="468" font-size="9.5" fill="#94a3b8" text-anchor="end">Filing Rekam Medis — RSI Sultan Agung Semarang</text>
+</svg>

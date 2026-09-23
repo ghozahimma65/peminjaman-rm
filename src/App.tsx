@@ -101,22 +101,28 @@ function AppContent() {
     return true;
   });
 
+  const handleNavigate = (page: string, nomorRm?: string) => {
+    setPrefillRm(nomorRm || "");
+    setActivePage(page);
+  };
+
   const renderContent = () => {
     switch (activePage) {
       case "dashboard":
-        return <Dashboard user={user} onNavigate={setActivePage} />;
+        return <Dashboard user={user} onNavigate={(page) => handleNavigate(page, "")} />;
       case "data-rm":
-        return <MasterDataRm onNavigate={(page, nomorRm) => { setPrefillRm(nomorRm || ""); setActivePage(page); }} />;
+        return <MasterDataRm onNavigate={handleNavigate} />;
       case "peminjaman-baru":
-        return <AjukanPeminjaman onNavigate={setActivePage} initialNomorRm={prefillRm} />;
+        return <AjukanPeminjaman onNavigate={(page) => handleNavigate(page, "")} initialNomorRm={prefillRm} />;
       case "daftar-peminjaman":
-        return <DaftarPeminjaman onNavigate={setActivePage} />;
+        return <DaftarPeminjaman onNavigate={handleNavigate} />;
       case "proses-pengembalian":
-        return <ProsesPengembalian onNavigate={setActivePage} />;
+        return <ProsesPengembalian key={prefillRm} onNavigate={(page) => handleNavigate(page, "")} initialNomorRm={prefillRm} />;
       case "berkas-belum-kembali":
         return <DaftarPengembalian />;
       case "riwayat-rm":
-        return <RiwayatRm initialNomorRm={prefillRm} onNavigate={(page, nomorRm) => { setPrefillRm(nomorRm || ""); setActivePage(page); }} />;
+        return <RiwayatRm key={prefillRm} initialNomorRm={prefillRm} onNavigate={handleNavigate} />;
+
       case "rekap-peminjaman":
         return <Laporan />;
       case "profil":
@@ -153,7 +159,7 @@ function AppContent() {
       <Layout
         user={layoutUser}
         activePage={activePage}
-        setActivePage={setActivePage}
+        setActivePage={(page) => handleNavigate(page, "")}
         visibleMenuItems={visibleMenuItems}
         onLogoutClick={() => setShowLogoutConfirm(true)}
       >

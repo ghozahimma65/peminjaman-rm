@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" width="1040" height="560">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap');
+      text { font-family: 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif; }
+    </style>
+  </defs>
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  
+  <!-- Header Title Banner -->
+  <rect x="0" y="0" width="1040" height="60" fill="#f8fafc"/>
+  <line x1="0" y1="60" x2="1040" y2="60" stroke="#e2e8f0" stroke-width="1.5"/>
+  <rect x="24" y="16" width="6" height="28" rx="3" fill="#056839"/>
+  <text x="38" y="32" font-size="16" font-weight="bold" fill="#0f172a">DFD Level 2 — Proses 2.0: Manajemen Master Data Rekam Medis (Data RM)</text>
+  <text x="38" y="47" font-size="11" fill="#64748b">Validasi sintaksis NIK 16 digit, pendaftaran berkas baru, dan deteksi ketersediaan fisik berkas di rak filing</text>
+
+  <!-- Diagram Content -->
+  
+    <g class="dfd-entity">
+      <filter id="shadow_ent_60_180" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="60" y="180" width="180" height="200" rx="6" fill="#f8fafc" stroke="#334155" stroke-width="2" filter="url(#shadow_ent_60_180)"/>
+      <rect x="60" y="180" width="180" height="28" rx="6" fill="#334155"/>
+      <rect x="60" y="200" width="180" height="8" fill="#334155"/>
+      <text x="150.0" y="198" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">Petugas Filing</text>
+      <text x="150.0" y="290.0" font-size="13" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#0f172a" text-anchor="middle">Petugas Rekam Medis</text>
+    </g>
+    
+    <g class="dfd-process">
+      <filter id="shadow_proc_330_110" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="330" y="110" width="250" height="65" rx="16" fill="#f0fdf4" stroke="#056839" stroke-width="2" filter="url(#shadow_proc_330_110)"/>
+      <path d="M 330 126 A 16 16 0 0 1 346 110 L 564 110 A 16 16 0 0 1 580 126 L 580 136 L 330 136 Z" fill="#056839"/>
+      <text x="455.0" y="128" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES 2.1</text>
+      <text x="455.0" y="150.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Validasi Format NIK</text>
+      <text x="455.0" y="165.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">Wajib 16 Digit Angka (/^\d{16}$/)</text>
+    </g>
+    
+    <g class="dfd-process">
+      <filter id="shadow_proc_330_230" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="330" y="230" width="250" height="65" rx="16" fill="#f0fdf4" stroke="#056839" stroke-width="2" filter="url(#shadow_proc_330_230)"/>
+      <path d="M 330 246 A 16 16 0 0 1 346 230 L 564 230 A 16 16 0 0 1 580 246 L 580 256 L 330 256 Z" fill="#056839"/>
+      <text x="455.0" y="248" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES 2.2</text>
+      <text x="455.0" y="270.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Registrasi Berkas RM Baru</text>
+      <text x="455.0" y="285.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">INSERT INTO data_rm</text>
+    </g>
+    
+    <g class="dfd-process">
+      <filter id="shadow_proc_330_350" x="-10%" y="-10%" width="120%" height="125%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
+      </filter>
+      <rect x="330" y="350" width="250" height="65" rx="16" fill="#f0fdf4" stroke="#056839" stroke-width="2" filter="url(#shadow_proc_330_350)"/>
+      <path d="M 330 366 A 16 16 0 0 1 346 350 L 564 350 A 16 16 0 0 1 580 366 L 580 376 L 330 376 Z" fill="#056839"/>
+      <text x="455.0" y="368" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES 2.3</text>
+      <text x="455.0" y="390.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Evaluasi Ketersediaan Fisik</text>
+      <text x="455.0" y="405.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">Kueri Agregasi EXISTS (isDipinjam)</text>
+    </g>
+    
+    <g class="dfd-datastore">
+      <filter id="shadow_ds_710_180" x="-5%" y="-5%" width="110%" height="120%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.06"/>
+      </filter>
+      <!-- Background -->
+      <rect x="710" y="180" width="220" height="45" fill="#ffffff" filter="url(#shadow_ds_710_180)"/>
+      <!-- ID Section -->
+      <rect x="710" y="180" width="42" height="45" fill="#dcfce7" stroke="#15803d" stroke-width="1.5"/>
+      <text x="731" y="207.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#15803d" text-anchor="middle">D3</text>
+      <!-- Store Label Section (Open right side) -->
+      <line x1="710" y1="180" x2="930" y2="180" stroke="#15803d" stroke-width="1.5"/>
+      <line x1="710" y1="225" x2="930" y2="225" stroke="#15803d" stroke-width="1.5"/>
+      <text x="764" y="207.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#0f172a">data_rm</text>
+    </g>
+    
+    <g class="dfd-datastore">
+      <filter id="shadow_ds_710_350" x="-5%" y="-5%" width="110%" height="120%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.06"/>
+      </filter>
+      <!-- Background -->
+      <rect x="710" y="350" width="220" height="45" fill="#ffffff" filter="url(#shadow_ds_710_350)"/>
+      <!-- ID Section -->
+      <rect x="710" y="350" width="42" height="45" fill="#dcfce7" stroke="#15803d" stroke-width="1.5"/>
+      <text x="731" y="377.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#15803d" text-anchor="middle">D4</text>
+      <!-- Store Label Section (Open right side) -->
+      <line x1="710" y1="350" x2="930" y2="350" stroke="#15803d" stroke-width="1.5"/>
+      <line x1="710" y1="395" x2="930" y2="395" stroke="#15803d" stroke-width="1.5"/>
+      <text x="764" y="377.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#0f172a">peminjaman</text>
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 240 210 L 280 210 L 280 142 L 330 142" fill="none" stroke="#2563eb" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="330,142 324,138 324,146" fill="#2563eb" transform="rotate(0.0, 330, 142)"/>
+      
+        <rect x="186.2" y="166" width="187.6" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="280" y="179" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Input Identitas Pasien & NIK</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 455 175 L 455 230" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="455,230 449,226 449,234" fill="#059669" transform="rotate(90.0, 455, 230)"/>
+      
+        <rect x="442.2" y="191" width="125.60000000000001" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="505" y="204" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">NIK Valid 16 Digit</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 580 255 L 710 202" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="710,202 704,198 704,206" fill="#059669" transform="rotate(-22.180344302017236, 710, 202)"/>
+      
+        <rect x="554.3" y="216" width="181.4" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="645" y="229" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Simpan Record Master Pasien</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 455 295 L 455 350" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="455,350 449,346 449,354" fill="#059669" transform="rotate(90.0, 455, 350)"/>
+      
+        <rect x="417.4" y="311" width="175.20000000000002" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="505" y="324" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Pemicu Refresh Master Data</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 580 365 L 710 212" fill="none" stroke="#0284c7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="710,212 704,208 704,216" fill="#0284c7" transform="rotate(-49.64633549119589, 710, 212)"/>
+      
+        <rect x="563.6" y="276" width="162.8" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="645" y="289" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Baca Seluruh Master Data</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 580 385 L 710 372" fill="none" stroke="#0284c7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="710,372 704,368 704,376" fill="#0284c7" transform="rotate(-5.710593137499642, 710, 372)"/>
+      
+        <rect x="538.8" y="366" width="212.4" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="645" y="379" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Cek Transaksi Aktif (isDipinjam)</text>
+        
+    </g>
+    
+    <g class="dfd-flow">
+      <path d="M 330 380 L 240 310" fill="none" stroke="#059669" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="240,310 234,306 234,314" fill="#059669" transform="rotate(-142.12501634890182, 240, 310)"/>
+      
+        <rect x="181.89999999999998" y="336" width="206.20000000000002" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="285" y="349" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Master RM & Status Fisik di Rak</text>
+        
+    </g>
+    
+
+  <!-- Footer Watermark -->
+  <text x="1016" y="548" font-size="9.5" fill="#94a3b8" text-anchor="end">Filing Rekam Medis — RSI Sultan Agung Semarang</text>
+</svg>

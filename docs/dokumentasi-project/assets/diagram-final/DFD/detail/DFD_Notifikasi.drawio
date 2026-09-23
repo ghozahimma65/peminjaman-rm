@@ -1,0 +1,95 @@
+<mxfile host="Electron" version="21.0.0">
+  <diagram id="Page-1" name="Diagram">
+    <mxGraphModel dx="1040" dy="560" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1040" pageHeight="560" background="#ffffff">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="e_petugas" value="[Penerima Peringatan]
+Petugas Rekam Medis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontStyle=1;fontSize=12;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="60" y="200" width="180" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="p5_1" value="PROSES 5.1
+
+Auto-Cleanup Notifikasi
+(Hapus pesan berkas kembali)" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="330" y="90" width="250" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="p5_2" value="PROSES 5.2
+
+Evaluasi Batas 48 Jam
+(calculateDeadline())" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="330" y="200" width="250" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="p5_3" value="PROSES 5.3
+
+Terbitkan REMINDER
+(Sisa Waktu &lt;= 24 Jam)" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="330" y="310" width="250" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="p5_4" value="PROSES 5.4
+
+Terbitkan TERLAMBAT
+(Waktu Melewati 48 Jam)" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;fontSize=11;fontColor=#064e3b;align=center;" vertex="1" parent="1">
+          <mxGeometry x="330" y="420" width="250" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="ds4" value="D4: peminjaman" style="shape=partialRectangle;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#15803d;strokeWidth=2;fontStyle=1;fontSize=12;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="710" y="150" width="220" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ds5" value="D5: pengembalian" style="shape=partialRectangle;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#15803d;strokeWidth=2;fontStyle=1;fontSize=12;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="710" y="260" width="220" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ds6" value="D6: notifications" style="shape=partialRectangle;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#15803d;strokeWidth=2;fontStyle=1;fontSize=12;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="710" y="370" width="220" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed1" value="DELETE Notifikasi Selesai" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p5_1" target="ds6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="580" y="115" as="exitPoint"/>
+            <mxPoint x="710" y="385" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed2" value="Ambil Pinjaman Aktif" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="ds4" target="p5_2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="172" as="exitPoint"/>
+            <mxPoint x="580" y="215" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed3" value="DiffMs &lt;= 24 Jam" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p5_2" target="p5_3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="455" y="265" as="exitPoint"/>
+            <mxPoint x="455" y="310" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed4" value="INSERT REMINDER" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p5_3" target="ds6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="580" y="342" as="exitPoint"/>
+            <mxPoint x="710" y="392" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed5" value="Now &gt; Deadline" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p5_2" target="p5_4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="455" y="375" as="exitPoint"/>
+            <mxPoint x="455" y="420" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed6" value="UPDATE status=&#x27;TERLAMBAT&#x27;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p5_4" target="ds4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="580" y="435" as="exitPoint"/>
+            <mxPoint x="710" y="185" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed7" value="INSERT TERLAMBAT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="p5_4" target="ds6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="580" y="455" as="exitPoint"/>
+            <mxPoint x="710" y="405" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed8" value="Notifikasi &amp; Badge Counter" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284c7;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="ds6" target="e_petugas">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="415" as="exitPoint"/>
+            <mxPoint x="200" y="380" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

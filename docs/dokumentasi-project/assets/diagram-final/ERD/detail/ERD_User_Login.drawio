@@ -1,0 +1,64 @@
+<mxfile host="Electron" version="21.0.0">
+  <diagram id="Page-1" name="Page-1">
+    <mxGraphModel dx="940" dy="480" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="940" pageHeight="480" background="#ffffff">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="users_tbl" value="users" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#056839;fontColor=#ffffff;strokeColor=#04522d;rounded=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="110" width="320" height="252" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_0" value="[PK] id : INTEGER" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="36" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_1" value="[UK] nip : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="60" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_2" value="[UK] email : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="84" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_3" value="passwordHash : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="108" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_4" value="name : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="132" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_5" value="role : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="156" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_6" value="avatarPath : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="180" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_7" value="createdAt : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="204" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="users_tbl_row_8" value="updatedAt : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
+          <mxGeometry y="228" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="login_logs_tbl" value="login_logs" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#056839;fontColor=#ffffff;strokeColor=#04522d;rounded=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="540" y="110" width="320" height="156" as="geometry"/>
+        </mxCell>
+        <mxCell id="login_logs_tbl_row_0" value="[PK] id : INTEGER" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="login_logs_tbl">
+          <mxGeometry y="36" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="login_logs_tbl_row_1" value="[FK] userId : INTEGER" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="login_logs_tbl">
+          <mxGeometry y="60" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="login_logs_tbl_row_2" value="nip : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="login_logs_tbl">
+          <mxGeometry y="84" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="login_logs_tbl_row_3" value="loginTime : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="login_logs_tbl">
+          <mxGeometry y="108" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="login_logs_tbl_row_4" value="status : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="login_logs_tbl">
+          <mxGeometry y="132" width="320" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_user_logs" value="FK: userId (1:N)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="users_tbl" target="login_logs_tbl">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="150" as="exitPoint"/>
+            <mxPoint x="540" y="150" as="entryPoint"/>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,42 @@
+<mxfile host="Electron" version="21.0.0">
+  <diagram id="Page-1" name="Page-1">
+    <mxGraphModel dx="1380" dy="920" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1380" pageHeight="920" background="#ffffff">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <!-- Entities -->
+        <mxCell id="ent_petugas" value="Petugas Rekam Medis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="330" width="180" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_admin" value="Super Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="180" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_fs" value="File System (OS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="720" width="180" height="120" as="geometry"/>
+        </mxCell>
+        <!-- Processes -->
+        <mxCell id="p1" value="1.0 Autentikasi &amp; Sesi" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="80" width="260" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2" value="2.0 Manajemen Data RM" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="190" width="260" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3" value="3.0 Peminjaman Berkas" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="300" width="260" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p4" value="4.0 Pengembalian Berkas" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="410" width="260" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p5" value="5.0 Monitoring Notifikasi" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="520" width="260" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p6" value="6.0 Laporan &amp; Ekspor" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="630" width="260" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p7" value="7.0 Profil &amp; Audit Log" style="rounded=1;arcSize=25;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#056839;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="740" width="260" height="68" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
