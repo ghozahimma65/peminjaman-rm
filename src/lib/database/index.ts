@@ -63,6 +63,7 @@ export async function initializeDatabase(): Promise<void> {
     }
 
     await ensureColumnExists("pengembalian", "kondisiBerkas", "TEXT NOT NULL DEFAULT 'BAIK'");
+    await ensureColumnExists("pengembalian", "catatanPengembalian", "TEXT");
     await ensureColumnExists("peminjaman", "namaPeminjam", "TEXT");
     await ensureColumnExists("data_rm", "nik", "TEXT");
     await ensureColumnExists("data_rm", "jenisKelamin", "TEXT");
@@ -78,11 +79,42 @@ export async function initializeDatabase(): Promise<void> {
       );
     }
 
+    // Self-healing synchronization:
+    // 1. Peminjaman yang memiliki row pengembalian HARUS berstatus 'DIKEMBALIKAN'
     await db.execute(
       `UPDATE peminjaman
        SET status = 'DIKEMBALIKAN', updatedAt = CURRENT_TIMESTAMP
        WHERE id IN (SELECT peminjamanId FROM pengembalian)
          AND status <> 'DIKEMBALIKAN'`,
+    );
+
+    // 2. Peminjaman yang TIDAK memiliki row pengembalian TIDAK BOLEH berstatus 'DIKEMBALIKAN'
+    await db.execute(
+      `UPDATE peminjaman
+       SET status = 'DIPINJAM', updatedAt = CURRENT_TIMESTAMP
+       WHERE id NOT IN (SELECT peminjamanId FROM pengembalian)
+         AND status = 'DIKEMBALIKAN'`,
+    );
+
+    // 3. Pastikan trigger SQLite terpasang untuk menjamin sinkronisasi atomik
+    await db.execute("DROP TRIGGER IF EXISTS trg_pengembalian_after_delete");
+    await db.execute(
+      `CREATE TRIGGER IF NOT EXISTS trg_pengembalian_after_delete
+       AFTER DELETE ON pengembalian
+       BEGIN
+         DELETE FROM peminjaman 
+         WHERE id = OLD.peminjamanId;
+       END;`
+    );
+
+    await db.execute(
+      `CREATE TRIGGER IF NOT EXISTS trg_pengembalian_after_insert
+       AFTER INSERT ON pengembalian
+       BEGIN
+         UPDATE peminjaman 
+         SET status = 'DIKEMBALIKAN', updatedAt = CURRENT_TIMESTAMP 
+         WHERE id = NEW.peminjamanId;
+       END;`
     );
 
     // 2. Check if SUPER_ADMIN exists

@@ -22,7 +22,8 @@ export interface PengembalianHistoryRow {
   dikembalikanOlehId: number;
   konfirmasiKembali: boolean;
   kondisiBerkas: "BAIK" | "RUSAK";
-  
+  catatanPengembalian?: string | null;
+
   // From peminjaman
   nomorRm: string;
   namaPasien: string;
@@ -59,7 +60,7 @@ export async function findActivePeminjamanByRm(nomorRm: string): Promise<Peminja
   };
 }
 
-export async function processPengembalian(peminjamanId: number, userId: number, kondisiBerkas: "BAIK" | "RUSAK" = "BAIK", tanggalBerkasKembali?: string): Promise<void> {
+export async function processPengembalian(peminjamanId: number, userId: number, kondisiBerkas: "BAIK" | "RUSAK" = "BAIK", tanggalBerkasKembali?: string, catatanPengembalian?: string | null): Promise<void> {
   const db = await getDb();
   // Tanggal kembali HARUS waktu aktual saat proses diproses (Requirement H & I)
   const returnDate = tanggalBerkasKembali || new Date().toISOString();
@@ -87,37 +88,47 @@ export async function processPengembalian(peminjamanId: number, userId: number, 
   let insertedReturnId: number | null = null;
 
   try {
-    const activeRows = await db.select<{ id: number }[]>(
-      "SELECT id FROM peminjaman WHERE id = $1 AND status IN ('DIPINJAM', 'TERLAMBAT')",
+    const activeRows = await db.select<{ id: number; status: string }[]>(
+      `SELECT p.id, p.status 
+       FROM peminjaman p 
+       WHERE p.id = $1 
+         AND p.status IN ('DIPINJAM', 'TERLAMBAT')
+         AND NOT EXISTS (SELECT 1 FROM pengembalian pg WHERE pg.peminjamanId = p.id)`,
       [peminjamanId],
     );
     if (activeRows.length === 0) {
-      throw new Error("Peminjaman ini sudah dikembalikan atau tidak lagi aktif.");
-    }
-
-    await db.execute(
-      `UPDATE peminjaman SET status = 'DIKEMBALIKAN', updatedAt = CURRENT_TIMESTAMP
-       WHERE id = $1 AND status IN ('DIPINJAM', 'TERLAMBAT')`,
-      [peminjamanId],
-    );
-
-    const updatedRows = await db.select<{ status: string }[]>("SELECT status FROM peminjaman WHERE id = $1", [peminjamanId]);
-    if (updatedRows[0]?.status !== "DIKEMBALIKAN") {
-      throw new Error("Status peminjaman tidak berhasil diperbarui.");
+      const existingReturns = await db.select<{ id: number }[]>(
+        "SELECT id FROM pengembalian WHERE peminjamanId = $1",
+        [peminjamanId]
+      );
+      if (existingReturns.length > 0) {
+        throw new Error("Berkas ini sudah dikembalikan (duplikasi transaksi).");
+      }
+      throw new Error("Peminjaman ini sudah tidak aktif atau tidak ditemukan.");
     }
 
     const insertResult = await db.execute(
-      `INSERT INTO pengembalian (peminjamanId, tanggalBerkasKembali, dikembalikanOlehId, konfirmasiKembali, kondisiBerkas)
-       VALUES ($1, $2, $3, 1, $4)`,
-      [peminjamanId, returnDate, userId, kondisiBerkas],
+      `INSERT INTO pengembalian (peminjamanId, tanggalBerkasKembali, dikembalikanOlehId, konfirmasiKembali, kondisiBerkas, catatanPengembalian)
+       VALUES ($1, $2, $3, 1, $4, $5)`,
+      [peminjamanId, returnDate, userId, kondisiBerkas, catatanPengembalian ?? null],
     );
     insertedReturnId = insertResult.lastInsertId as number;
+
+    // Trigger SQLite trg_pengembalian_after_insert secara otomatis dan atomik
+    // mengubah status peminjaman menjadi 'DIKEMBALIKAN'.
+    // Defense-in-depth update:
+    await db.execute(
+      `UPDATE peminjaman SET status = 'DIKEMBALIKAN', updatedAt = CURRENT_TIMESTAMP
+       WHERE id = $1 AND status <> 'DIKEMBALIKAN'`,
+      [peminjamanId],
+    );
   } catch (error: unknown) {
-    try {
-      if (insertedReturnId) await db.execute("DELETE FROM pengembalian WHERE id = $1", [insertedReturnId]);
-      await db.execute("UPDATE peminjaman SET status = 'DIPINJAM', updatedAt = CURRENT_TIMESTAMP WHERE id = $1", [peminjamanId]);
-    } catch (rollbackError) {
-      console.error("[Return] Recovery failed:", rollbackError);
+    if (insertedReturnId) {
+      try {
+        await db.execute("DELETE FROM pengembalian WHERE id = $1", [insertedReturnId]);
+      } catch (cleanupError) {
+        console.error("[Return] Cleanup failed:", cleanupError);
+      }
     }
     
     const errMessage = (error as Error).message || "";
@@ -143,18 +154,32 @@ export async function updatePengembalianKondisi(id: number, kondisiBerkas: "BAIK
 }
 
 export async function deletePengembalian(id: number): Promise<void> {
-  const db = await getDb();
-  await db.execute("BEGIN TRANSACTION");
-  try {
-    const rows = await db.select<{ peminjamanId: number }[]>("SELECT peminjamanId FROM pengembalian WHERE id = $1", [id]);
-    if (rows.length === 0) throw new Error("Data pengembalian tidak ditemukan.");
-    await db.execute("DELETE FROM pengembalian WHERE id = $1", [id]);
-    await db.execute("UPDATE peminjaman SET status = 'DIPINJAM', updatedAt = CURRENT_TIMESTAMP WHERE id = $1", [rows[0].peminjamanId]);
-    await db.execute("COMMIT");
-  } catch (error) {
-    await db.execute("ROLLBACK");
-    throw error;
+  if (!id || typeof id !== "number" || id <= 0) {
+    throw new Error("ID pengembalian tidak valid.");
   }
+  const db = await getDb();
+  
+  // 1. Validasi & pastikan row pengembalian ada
+  const rows = await db.select<{ id: number; peminjamanId: number }[]>(
+    "SELECT id, peminjamanId FROM pengembalian WHERE id = $1", 
+    [id]
+  );
+  if (rows.length === 0) {
+    throw new Error("Data pengembalian tidak ditemukan.");
+  }
+  const { peminjamanId } = rows[0];
+
+  // 2. Hapus row pengembalian.
+  // Trigger SQLite 'trg_pengembalian_after_delete' secara atomik dan pasti
+  // menghapus parent peminjaman (WHERE id = OLD.peminjamanId) beserta cascaded notifications.
+  const res = await db.execute("DELETE FROM pengembalian WHERE id = $1", [id]);
+  if (res.rowsAffected === 0) {
+    throw new Error("Data pengembalian gagal dihapus.");
+  }
+
+  // 3. Defense-in-depth: pastikan peminjaman & notifikasi terkait terhapus jika belum terhapus
+  await db.execute("DELETE FROM notifications WHERE peminjamanId = $1", [peminjamanId]);
+  await db.execute("DELETE FROM peminjaman WHERE id = $1", [peminjamanId]);
 }
 
 export async function getPengembalianHistory(filters?: FilterPengembalian): Promise<PengembalianHistoryRow[]> {
@@ -163,6 +188,7 @@ export async function getPengembalianHistory(filters?: FilterPengembalian): Prom
   let query = `
     SELECT 
       pg.id, pg.peminjamanId, pg.tanggalBerkasKembali, pg.dikembalikanOlehId, pg.konfirmasiKembali, pg.kondisiBerkas,
+      pg.catatanPengembalian,
       p.nomorRm, p.namaPasien, p.catatan, p.tanggalPinjam, p.tanggalBerkasKeluar, p.unit, p.jilid, p.status, p.namaPeminjam,
       u1.name as operatorPeminjamName,
       u2.name as dikembalikanOlehName

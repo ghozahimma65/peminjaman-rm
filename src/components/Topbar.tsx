@@ -9,7 +9,7 @@ import { getAvatarDisplayUrl } from "../lib/auth/avatarService";
 interface TopbarProps {
   user: User;
   activePage: string;
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, nomorRm?: string) => void;
   onLogoutClick: () => void;
 }
 
@@ -96,6 +96,9 @@ export function Topbar({ user, activePage, onNavigate, onLogoutClick }: TopbarPr
   };
 
   const getBreadcrumb = () => {
+    if (activePage === "semua-notifikasi") {
+      return { parent: "Notifikasi", current: "Semua Notifikasi" };
+    }
     if (activePage === "data-rm") {
       return { parent: "Master Data", current: "Data Pasien/RM" };
     }
@@ -138,7 +141,7 @@ export function Topbar({ user, activePage, onNavigate, onLogoutClick }: TopbarPr
           {showNotifications && (
             <NotificationPanel 
               onClose={() => setShowNotifications(false)} 
-              onNavigate={onNavigate}
+              onNavigate={(page, nomorRm) => onNavigate(page, nomorRm)}
               onRead={fetchUnread}
             />
           )}

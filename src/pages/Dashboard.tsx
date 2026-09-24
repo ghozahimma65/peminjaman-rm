@@ -100,8 +100,6 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
   const statCard = "flex min-h-[100px] items-center gap-4 rounded-xl border border-slate-200 bg-white px-5 shadow-[0_2px_5px_rgba(15,23,42,0.12)]";
 
   return <div className="min-h-full space-y-5 bg-slate-50/40 pb-8">
-    <label htmlFor="dashboard-search" className="sr-only">Cari peminjaman atau nama pasien</label>
-    <input id="dashboard-search" type="search" placeholder="Cari No. Peminjaman / Nama Pasien" className="h-9 w-full rounded-md border border-slate-300 bg-white px-4 text-[10px] text-slate-700 outline-none placeholder:text-slate-400 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600" />
     {error && <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{error}</div>}
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-[repeat(3,minmax(0,1fr))_140px_140px]">
       <div className={statCard}><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><Icons.Peminjaman /></span><div><strong className="block text-xl leading-none text-slate-800">{isLoading ? "-" : activeCount}</strong><span className="mt-2 block text-[11px] font-semibold text-slate-800">Peminjaman Aktif</span><span className="text-[10px] text-slate-500">Sedang dipinjam</span></div></div>

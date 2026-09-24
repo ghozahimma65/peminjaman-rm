@@ -288,7 +288,7 @@ export function RiwayatRm({
                   <th className="px-3 py-3">Tanggal Pinjam</th>
                   <th className="px-3 py-3">Tanggal Kembali</th>
                   <th className="px-3 py-3">Kondisi Berkas</th>
-                  <th className="px-3 py-3">Keperluan</th>
+                  <th className="px-3 py-3">Catatan Peminjaman</th>
                   <th className="px-3 py-3">Status</th>
                   <th className="px-3 py-3">Aksi</th>
                 </tr>
@@ -536,10 +536,16 @@ export function RiwayatRm({
                   {formatTanggalKembaliWithDuration(viewRow.tanggalPinjam, viewRow.tanggalBerkasKembali)}
                 </dd>
               </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-slate-400">Keperluan</dt>
-                <dd className="max-w-[190px] font-medium text-slate-700 text-right truncate" title={viewRow.catatan || "-"}>
+              <div className="flex items-start justify-between">
+                <dt className="text-slate-400 shrink-0">Catatan Peminjaman</dt>
+                <dd className="max-w-[190px] font-medium text-slate-700 text-right" title={viewRow.catatan || "-"}>
                   {viewRow.catatan || "-"}
+                </dd>
+              </div>
+              <div className="flex items-start justify-between">
+                <dt className="text-slate-400 shrink-0">Catatan Pengembalian</dt>
+                <dd className="max-w-[190px] font-medium text-slate-700 text-right" title={viewRow.catatanPengembalian || "-"}>
+                  {viewRow.catatanPengembalian || "-"}
                 </dd>
               </div>
               <div className="flex items-center justify-between pt-1">

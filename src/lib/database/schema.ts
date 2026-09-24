@@ -65,5 +65,19 @@ export const INITIALIZATION_SQL = [
     isRead BOOLEAN DEFAULT 0,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(peminjamanId) REFERENCES peminjaman(id) ON DELETE CASCADE
-  );`
+  );`,
+  `DROP TRIGGER IF EXISTS trg_pengembalian_after_delete;`,
+  `CREATE TRIGGER IF NOT EXISTS trg_pengembalian_after_delete
+  AFTER DELETE ON pengembalian
+  BEGIN
+    DELETE FROM peminjaman 
+    WHERE id = OLD.peminjamanId;
+  END;`,
+  `CREATE TRIGGER IF NOT EXISTS trg_pengembalian_after_insert
+  AFTER INSERT ON pengembalian
+  BEGIN
+    UPDATE peminjaman 
+    SET status = 'DIKEMBALIKAN', updatedAt = CURRENT_TIMESTAMP 
+    WHERE id = NEW.peminjamanId;
+  END;`
 ];

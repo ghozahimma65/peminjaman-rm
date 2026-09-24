@@ -10,6 +10,16 @@ export interface DataRmRow {
 }
 
 /**
+ * Validasi Nomor RM: Wajib angka 0-9 dan maksimal 8 digit.
+ */
+export function validateNomorRm(nomorRm: string): void {
+  const trimmed = (nomorRm || "").trim();
+  if (!trimmed || !/^\d{1,8}$/.test(trimmed)) {
+    throw new Error("No. RM harus berupa angka dan maksimal 8 digit.");
+  }
+}
+
+/**
  * Validasi NIK: Wajib tepat 16 digit angka, tanpa huruf, spasi, atau simbol.
  */
 export function validateNik(nik: string): void {
@@ -30,6 +40,7 @@ export async function createDataRm(
   tanggalLahir: string,
   alamat: string,
 ): Promise<void> {
+  validateNomorRm(nomorRm);
   validateNik(nik);
   const db = await getDb();
   await db.execute(
@@ -176,5 +187,34 @@ export async function searchDataRm(keyword: string): Promise<MasterDataRmRow[]> 
     ORDER BY d.nomorRm ASC
   `;
   return await db.select<MasterDataRmRow[]>(query, [searchPattern]);
+}
+
+/**
+ * Mengecek jumlah riwayat/transaksi peminjaman yang terhubung ke nomor RM
+ */
+export async function checkDataRmHasTransactions(nomorRm: string): Promise<number> {
+  const db = await getDb();
+  const result = await db.select<{ count: number }[]>(
+    "SELECT COUNT(*) as count FROM peminjaman WHERE nomorRm = $1",
+    [nomorRm]
+  );
+  return result[0]?.count ?? 0;
+}
+
+/**
+ * Menghapus Data RM secara aman.
+ * Menolak penghapusan bila masih terdapat transaksi/riwayat peminjaman.
+ */
+export async function deleteDataRm(nomorRm: string): Promise<void> {
+  const db = await getDb();
+  const txCount = await checkDataRmHasTransactions(nomorRm);
+  if (txCount > 0) {
+    throw new Error(`Data RM ${nomorRm} tidak dapat dihapus karena masih memiliki ${txCount} riwayat transaksi peminjaman.`);
+  }
+
+  const res = await db.execute("DELETE FROM data_rm WHERE nomorRm = $1", [nomorRm]);
+  if (res.rowsAffected === 0) {
+    throw new Error(`Data RM ${nomorRm} tidak ditemukan atau gagal dihapus.`);
+  }
 }
 

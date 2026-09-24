@@ -30,6 +30,7 @@ export interface RiwayatTransaksiRow {
   tanggalBerkasKembali: string | null;
   dikembalikanOlehId: number | null;
   dikembalikanOlehName: string | null;
+  catatanPengembalian?: string | null;
 }
 
 export interface RiwayatRmResult {
@@ -56,6 +57,7 @@ export interface AllRiwayatRow {
   tanggalBerkasKembali: string | null;
   dikembalikanOlehId: number | null;
   dikembalikanOlehName: string | null;
+  catatanPengembalian?: string | null;
   statusPeminjaman: string;
 }
 
@@ -96,6 +98,7 @@ export async function getRiwayatByRm(nomorRm: string): Promise<RiwayatRmResult> 
       pg.id as pengembalianId,
       pg.tanggalBerkasKembali,
       pg.dikembalikanOlehId,
+      pg.catatanPengembalian,
       u2.name as dikembalikanOlehName
     FROM peminjaman p
     LEFT JOIN pengembalian pg ON p.id = pg.peminjamanId
@@ -163,6 +166,7 @@ export async function getAllRiwayat(search?: string): Promise<AllRiwayatRow[]> {
       pg.tanggalBerkasKembali,
       pg.kondisiBerkas,
       pg.dikembalikanOlehId,
+      pg.catatanPengembalian,
       u2.name as dikembalikanOlehName
     FROM peminjaman p
     LEFT JOIN pengembalian pg ON p.id = pg.peminjamanId

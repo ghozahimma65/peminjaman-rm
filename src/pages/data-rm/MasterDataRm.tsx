@@ -5,6 +5,8 @@ import { Modal } from "../../components/ui/Modal";
 import { 
   createDataRm,
   updateDataRm,
+  deleteDataRm,
+  validateNomorRm,
   getAllDataRm, 
   searchDataRm, 
   getDataRmStats,
@@ -43,22 +45,54 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
-const AVATAR_PALETTES = [
-  { bg: "bg-pink-100", text: "text-pink-700" },
-  { bg: "bg-cyan-100", text: "text-cyan-700" },
-  { bg: "bg-purple-100", text: "text-purple-700" },
-  { bg: "bg-amber-100", text: "text-amber-800" },
-  { bg: "bg-teal-100", text: "text-teal-700" },
-  { bg: "bg-emerald-100", text: "text-emerald-800" },
-];
-
-function getAvatarStyle(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+/**
+ * Tema warna card berdasarkan gender (Batch 2: Laki-laki = Biru, Perempuan = Pink, Null = Netral)
+ */
+function getGenderTheme(gender?: string | null) {
+  const g = (gender || "").trim().toLowerCase();
+  if (g === "laki-laki" || g === "pria" || g === "male") {
+    return {
+      type: "male" as const,
+      label: "Laki-laki",
+      borderAccent: "border-l-4 border-l-blue-500",
+      rowBg: "hover:bg-blue-50/40",
+      avatarBg: "bg-blue-100 text-blue-700 border border-blue-200",
+      pillBg: "bg-blue-50 text-blue-700 border border-blue-200",
+      accentText: "text-blue-600",
+      badgeBg: "bg-blue-100 text-blue-800",
+      detailBoxBg: "border-blue-100 bg-blue-50/50",
+      detailBadgeBg: "bg-blue-100 text-blue-700",
+      rmText: "text-blue-600 hover:text-blue-800",
+    };
   }
-  const index = Math.abs(hash) % AVATAR_PALETTES.length;
-  return AVATAR_PALETTES[index];
+  if (g === "perempuan" || g === "wanita" || g === "female") {
+    return {
+      type: "female" as const,
+      label: "Perempuan",
+      borderAccent: "border-l-4 border-l-pink-500",
+      rowBg: "hover:bg-pink-50/40",
+      avatarBg: "bg-pink-100 text-pink-700 border border-pink-200",
+      pillBg: "bg-pink-50 text-pink-700 border border-pink-200",
+      accentText: "text-pink-600",
+      badgeBg: "bg-pink-100 text-pink-800",
+      detailBoxBg: "border-pink-100 bg-pink-50/50",
+      detailBadgeBg: "bg-pink-100 text-pink-700",
+      rmText: "text-pink-600 hover:text-pink-800",
+    };
+  }
+  return {
+    type: "neutral" as const,
+    label: "-",
+    borderAccent: "border-l-4 border-l-slate-300",
+    rowBg: "hover:bg-slate-50/70",
+    avatarBg: "bg-slate-100 text-slate-700 border border-slate-200",
+    pillBg: "bg-slate-100 text-slate-600 border border-slate-200",
+    accentText: "text-slate-800",
+    badgeBg: "bg-slate-100 text-slate-700",
+    detailBoxBg: "border-slate-100 bg-slate-50/70",
+    detailBadgeBg: "bg-slate-100 text-slate-700",
+    rmText: "text-slate-700 hover:text-slate-900",
+  };
 }
 
 function formatNumber(num: number): string {
@@ -66,7 +100,6 @@ function formatNumber(num: number): string {
 }
 
 export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
-  void onNavigate;
   const [data, setData] = useState<MasterDataRmRow[]>([]);
   const [stats, setStats] = useState<DataRmStats>({
     totalPasien: 0,
@@ -86,6 +119,12 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
   const [modalTitle, setModalTitle] = useState("Rekam Medis Berhasil Dibuat");
   const [selectedRm, setSelectedRm] = useState<MasterDataRmRow | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Delete State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<MasterDataRmRow | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteSuccessMsg, setDeleteSuccessMsg] = useState("");
 
   // Create Form State
   const [formError, setFormError] = useState("");
@@ -241,6 +280,13 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
       return;
     }
 
+    try {
+      validateNomorRm(nomorRm);
+    } catch (e: unknown) {
+      setFormError((e as Error).message);
+      return;
+    }
+
     if (!/^\d{16}$/.test(nik)) {
       setFormError("NIK wajib terdiri dari tepat 16 digit angka (tanpa huruf, spasi, atau simbol).");
       return;
@@ -272,6 +318,31 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
         : message);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDeleteClick = (row: MasterDataRmRow) => {
+    setDeleteTarget(row);
+    setErrorMsg("");
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget || isDeleting) return;
+    setIsDeleting(true);
+    setErrorMsg("");
+    try {
+      await deleteDataRm(deleteTarget.nomorRm);
+      setShowDeleteModal(false);
+      setDeleteSuccessMsg(`Data RM ${deleteTarget.nomorRm} (${deleteTarget.namaPasien}) berhasil dihapus.`);
+      setDeleteTarget(null);
+      await loadData(keyword);
+      setTimeout(() => setDeleteSuccessMsg(""), 4000);
+    } catch (err: unknown) {
+      setErrorMsg((err as Error).message || "Data RM gagal dihapus.");
+      setShowDeleteModal(false);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -355,12 +426,16 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
                   <input
                     type="text"
                     required
+                    maxLength={8}
                     value={form.nomorRm}
-                    onChange={(e) => setForm((prev) => ({ ...prev, nomorRm: e.target.value }))}
-                    placeholder="01-24-0894"
+                    onChange={(e) => setForm((prev) => ({ ...prev, nomorRm: e.target.value.replace(/\D/g, "").slice(0, 8) }))}
+                    placeholder="Contoh: 12345678"
                     className="h-11 w-full rounded-lg border border-slate-200 bg-slate-50 pl-11 pr-4 text-xs font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:bg-white focus:ring-1 focus:ring-emerald-600"
                   />
                 </div>
+                <span className="mt-1 block text-[10px] text-slate-400">
+                  Hanya angka 0–9, maksimal 8 digit ({form.nomorRm.length}/8)
+                </span>
               </div>
 
               <div>
@@ -376,11 +451,14 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
                     required
                     maxLength={16}
                     value={form.nik}
-                    onChange={(e) => setForm((prev) => ({ ...prev, nik: e.target.value }))}
+                    onChange={(e) => setForm((prev) => ({ ...prev, nik: e.target.value.replace(/\D/g, "").slice(0, 16) }))}
                     placeholder="16 Digit NIK KTP"
                     className="h-11 w-full rounded-lg border border-slate-200 bg-slate-50 pl-11 pr-4 text-xs font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:bg-white focus:ring-1 focus:ring-emerald-600"
                   />
                 </div>
+                <span className="mt-1 block text-[10px] text-slate-400">
+                  Wajib tepat 16 digit angka ({form.nik.length}/16)
+                </span>
               </div>
             </div>
 
@@ -416,7 +494,7 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
                     onClick={() => setForm((prev) => ({ ...prev, jenisKelamin: "Laki-laki" }))}
                     className={`flex h-11 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition cursor-pointer ${
                       form.jenisKelamin === "Laki-laki"
-                        ? "bg-[#064e3b] text-white shadow-sm"
+                        ? "bg-blue-600 text-white shadow-sm ring-2 ring-blue-600/30"
                         : "border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
                   >
@@ -428,7 +506,7 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
                     onClick={() => setForm((prev) => ({ ...prev, jenisKelamin: "Perempuan" }))}
                     className={`flex h-11 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition cursor-pointer ${
                       form.jenisKelamin === "Perempuan"
-                        ? "bg-[#064e3b] text-white shadow-sm"
+                        ? "bg-pink-600 text-white shadow-sm ring-2 ring-pink-600/30"
                         : "border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
                   >
@@ -620,6 +698,22 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
         </form>
       </div>
 
+      {/* Success / Feedback Alert */}
+      {deleteSuccessMsg && (
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-xs font-medium text-emerald-800 flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <span className="font-bold text-emerald-600">✓</span> {deleteSuccessMsg}
+          </span>
+          <button
+            type="button"
+            onClick={() => setDeleteSuccessMsg("")}
+            className="text-emerald-600 hover:text-emerald-800 text-sm font-bold cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Error Message */}
       {errorMsg && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">
@@ -682,17 +776,17 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {paginatedRows.map((row) => {
-                  const avatarStyle = getAvatarStyle(row.namaPasien);
+                  const genderTheme = getGenderTheme(row.jenisKelamin);
                   const isDipinjam = Boolean(row.isDipinjam);
 
                   return (
-                    <tr key={row.nomorRm} className="align-top transition hover:bg-slate-50/70">
+                    <tr key={row.nomorRm} className={`align-top transition ${genderTheme.borderAccent} ${genderTheme.rowBg}`}>
                       {/* 1. No. RM */}
                       <td className="px-6 py-4">
                         <button
                           type="button"
                           onClick={() => handleViewDetailFromTable(row)}
-                          className="font-bold text-sky-600 hover:underline cursor-pointer tracking-wide"
+                          className={`font-bold hover:underline cursor-pointer tracking-wide ${genderTheme.rmText}`}
                         >
                           {row.nomorRm}
                         </button>
@@ -702,7 +796,7 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
                       <td className="px-6 py-4">
                         <div className="flex items-start gap-3">
                           <div
-                            className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${avatarStyle.bg} ${avatarStyle.text}`}
+                            className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${genderTheme.avatarBg}`}
                           >
                             {getInitials(row.namaPasien)}
                           </div>
@@ -713,7 +807,11 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
                             </div>
                             <div>
                               <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Jenis Kelamin</span>
-                              <span className="block text-slate-700">{row.jenisKelamin || "-"}</span>
+                              <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium ${genderTheme.pillBg}`}>
+                                {row.jenisKelamin === "Laki-laki" && <Icons.Male />}
+                                {row.jenisKelamin === "Perempuan" && <Icons.Female />}
+                                {row.jenisKelamin || "Belum diketahui"}
+                              </span>
                             </div>
                             <div>
                               <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Umur</span>
@@ -751,7 +849,7 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
 
                       {/* 5. Aksi */}
                       <td className="px-6 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleViewDetailFromTable(row)}
@@ -767,6 +865,22 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
                             className="flex h-7 w-7 items-center justify-center rounded-md border border-yellow-200 bg-yellow-100 text-yellow-700 transition hover:bg-yellow-200 cursor-pointer"
                           >
                             <Icons.Edit />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onNavigate("riwayat-rm", row.nomorRm)}
+                            title="Buka Riwayat RM"
+                            className="flex h-7 w-7 items-center justify-center rounded-md border border-sky-200 bg-sky-50 text-sky-700 transition hover:bg-sky-100 cursor-pointer"
+                          >
+                            <Icons.History />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteClick(row)}
+                            title="Hapus Data RM"
+                            className="flex h-7 w-7 items-center justify-center rounded-md border border-red-200 bg-red-50 text-red-600 transition hover:bg-red-100 cursor-pointer"
+                          >
+                            <Icons.Trash />
                           </button>
                         </div>
                       </td>
@@ -839,7 +953,7 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
   // MODALS RENDERING (FIGMA IMAGES 2 & 3)
   // ==========================================
   function renderModals() {
-    if (!showSaveSuccessModal && !showDetailModal && !showEditModal && !showEditSuccessModal) return null;
+    if (!showSaveSuccessModal && !showDetailModal && !showEditModal && !showEditSuccessModal && !showDeleteModal) return null;
 
     return (
       <>
@@ -853,6 +967,29 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
           confirmText="Selesai"
           cancelText={null}
           variant="success"
+        />
+
+        {/* Modal Konfirmasi Hapus Data RM */}
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => {
+            if (!isDeleting) {
+              setShowDeleteModal(false);
+              setDeleteTarget(null);
+            }
+          }}
+          onConfirm={handleConfirmDelete}
+          title="Hapus Data Rekam Medis"
+          description={
+            deleteTarget
+              ? `Apakah Anda yakin ingin menghapus data RM "${deleteTarget.nomorRm}" (${deleteTarget.namaPasien})? Tindakan ini hanya dapat dilakukan jika RM belum memiliki riwayat transaksi.`
+              : "Apakah Anda yakin ingin menghapus data RM ini?"
+          }
+          confirmText={isDeleting ? "Menghapus..." : "Hapus"}
+          cancelText="Batal"
+          variant="delete"
+          isDanger={true}
+          isLoading={isDeleting}
         />
 
         {(showSaveSuccessModal || showDetailModal || showEditModal) && (
@@ -910,108 +1047,140 @@ export function MasterDataRm({ onNavigate }: MasterDataRmProps) {
             )}
 
             {/* POPUP 2: DETAIL REKAM MEDIS (FIGMA IMAGE 3) */}
-            {showDetailModal && selectedRm && !showEditModal && (
-              <div
-                className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl transition-all"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Top Soft Green Badge */}
-                <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                  <Icons.Check />
-                </div>
+            {showDetailModal && selectedRm && !showEditModal && (() => {
+              const detailTheme = getGenderTheme(selectedRm.jenisKelamin);
+              return (
+                <div
+                  className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl transition-all"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Top Badge */}
+                  <div className={`mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full ${detailTheme.avatarBg}`}>
+                    {selectedRm.jenisKelamin === "Perempuan" ? <Icons.Female /> : selectedRm.jenisKelamin === "Laki-laki" ? <Icons.Male /> : <Icons.User />}
+                  </div>
 
-                <h3 className="text-center text-xl font-bold text-slate-900">
-                  {modalTitle}
-                </h3>
+                  <h3 className="text-center text-xl font-bold text-slate-900">
+                    {modalTitle}
+                  </h3>
 
-                {/* Nomor RM Box */}
-                <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50/70 p-4 text-center">
-                  <span className="block text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
-                    NOMOR REKAM MEDIS (NO. RM)
-                  </span>
-                  <div className="mt-1 flex items-center justify-center gap-2">
-                    <span className="text-2xl font-bold font-mono tracking-wider text-pink-600">
-                      {selectedRm.nomorRm}
+                  {/* Nomor RM Box */}
+                  <div className={`mt-5 rounded-xl border p-4 text-center ${detailTheme.detailBoxBg}`}>
+                    <span className="block text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+                      NOMOR REKAM MEDIS (NO. RM)
                     </span>
+                    <div className="mt-1 flex items-center justify-center gap-2">
+                      <span className={`text-2xl font-bold font-mono tracking-wider ${detailTheme.accentText}`}>
+                        {selectedRm.nomorRm}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyRm(selectedRm.nomorRm)}
+                        title="Salin No. RM"
+                        className="rounded p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700 cursor-pointer"
+                      >
+                        {copied ? <span className="text-xs font-bold text-emerald-600">✓</span> : <Icons.Copy />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Details List */}
+                  <div className="mt-6 space-y-3 text-xs">
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+                      <span className="text-slate-400">Nama Lengkap</span>
+                      <span className="font-semibold text-slate-900 text-right">{selectedRm.namaPasien}</span>
+                    </div>
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+                      <span className="text-slate-400">NIK</span>
+                      <span className="font-semibold text-slate-900 text-right">{selectedRm.nik || "-"}</span>
+                    </div>
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+                      <span className="text-slate-400">Jenis Kelamin</span>
+                      <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 font-semibold ${detailTheme.pillBg}`}>
+                        {selectedRm.jenisKelamin === "Laki-laki" && <Icons.Male />}
+                        {selectedRm.jenisKelamin === "Perempuan" && <Icons.Female />}
+                        {selectedRm.jenisKelamin || "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+                      <span className="text-slate-400">Umur</span>
+                      <span className="font-semibold text-slate-900 text-right">
+                        {calculateAge(selectedRm.tanggalLahir) !== null ? `${calculateAge(selectedRm.tanggalLahir)} Tahun` : "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+                      <span className="text-slate-400">Tanggal Lahir</span>
+                      <span className="font-semibold text-slate-900 text-right">{formatDateLahir(selectedRm.tanggalLahir)}</span>
+                    </div>
+                    <div className="flex items-start justify-between pb-2.5">
+                      <span className="text-slate-400">Alamat</span>
+                      <span className="max-w-[240px] font-semibold text-slate-900 text-right">
+                        {selectedRm.alamat || "-"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Bottom Buttons */}
+                  <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
                     <button
                       type="button"
-                      onClick={() => handleCopyRm(selectedRm.nomorRm)}
-                      title="Salin No. RM"
-                      className="rounded p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700 cursor-pointer"
+                      onClick={() => {
+                        setShowDetailModal(false);
+                        handleDeleteClick(selectedRm);
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100 cursor-pointer"
                     >
-                      {copied ? <span className="text-xs font-bold text-emerald-600">✓</span> : <Icons.Copy />}
+                      <Icons.Trash />
+                      <span>Hapus</span>
                     </button>
-                  </div>
-                </div>
 
-                {/* Details List (Requirement 2: Jenis Kelamin, Umur, Tanggal Lahir) */}
-                <div className="mt-6 space-y-3 text-xs">
-                  <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
-                    <span className="text-slate-400">Nama Lengkap</span>
-                    <span className="font-semibold text-slate-900 text-right">{selectedRm.namaPasien}</span>
-                  </div>
-                  <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
-                    <span className="text-slate-400">NIK</span>
-                    <span className="font-semibold text-slate-900 text-right">{selectedRm.nik || "-"}</span>
-                  </div>
-                  <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
-                    <span className="text-slate-400">Jenis Kelamin</span>
-                    <span className="font-semibold text-slate-900 text-right">{selectedRm.jenisKelamin || "-"}</span>
-                  </div>
-                  <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
-                    <span className="text-slate-400">Umur</span>
-                    <span className="font-semibold text-slate-900 text-right">
-                      {calculateAge(selectedRm.tanggalLahir) !== null ? `${calculateAge(selectedRm.tanggalLahir)} Tahun` : "-"}
-                    </span>
-                  </div>
-                  <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
-                    <span className="text-slate-400">Tanggal Lahir</span>
-                    <span className="font-semibold text-slate-900 text-right">{formatDateLahir(selectedRm.tanggalLahir)}</span>
-                  </div>
-                  <div className="flex items-start justify-between pb-2.5">
-                    <span className="text-slate-400">Alamat</span>
-                    <span className="max-w-[240px] font-semibold text-slate-900 text-right">
-                      {selectedRm.alamat || "-"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowDetailModal(false);
+                          onNavigate("riwayat-rm", selectedRm.nomorRm);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700 transition hover:bg-sky-100 cursor-pointer"
+                      >
+                        <Icons.History />
+                        <span>Buka Riwayat</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowDetailModal(false);
+                          if (view === "create") {
+                            setView("list");
+                          }
+                        }}
+                        className="rounded-lg bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-200 cursor-pointer"
+                      >
+                        Kembali
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditForm({
+                            nomorRm: selectedRm.nomorRm,
+                            namaPasien: selectedRm.namaPasien,
+                            nik: selectedRm.nik || "",
+                            jenisKelamin: selectedRm.jenisKelamin || "Laki-laki",
+                            tanggalLahir: selectedRm.tanggalLahir || "",
+                            alamat: selectedRm.alamat || "",
+                          });
+                          setEditFormError("");
+                          setShowEditModal(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800 cursor-pointer"
+                      >
+                        <Icons.Edit />
+                        <span>Edit</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                {/* Bottom Buttons: Kembali & Edit (Requirement 3) */}
-                <div className="mt-6 flex justify-end gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowDetailModal(false);
-                      if (view === "create") {
-                        setView("list");
-                      }
-                    }}
-                    className="rounded-lg bg-slate-100 px-5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-200 cursor-pointer"
-                  >
-                    Kembali
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditForm({
-                        nomorRm: selectedRm.nomorRm,
-                        namaPasien: selectedRm.namaPasien,
-                        nik: selectedRm.nik || "",
-                        jenisKelamin: selectedRm.jenisKelamin || "Laki-laki",
-                        tanggalLahir: selectedRm.tanggalLahir || "",
-                        alamat: selectedRm.alamat || "",
-                      });
-                      setEditFormError("");
-                      setShowEditModal(true);
-                    }}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800 cursor-pointer"
-                  >
-                    <Icons.Edit />
-                    <span>Edit</span>
-                  </button>
-                </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* POPUP 3: EDIT DATA PASIEN DARI DETAIL (Requirement 3) */}
             {showEditModal && (

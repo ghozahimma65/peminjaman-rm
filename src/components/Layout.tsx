@@ -6,7 +6,7 @@ import { User, MenuItem } from "../types";
 interface LayoutProps {
   user: User;
   activePage: string;
-  setActivePage: (page: string) => void;
+  setActivePage: (page: string, nomorRm?: string) => void;
   visibleMenuItems: MenuItem[];
   onLogoutClick: () => void;
   children: React.ReactNode;

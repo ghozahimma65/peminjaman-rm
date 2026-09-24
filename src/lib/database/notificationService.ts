@@ -10,6 +10,10 @@ export interface NotificationRow {
   createdAt: string;
 }
 
+export interface NotificationRowWithRm extends NotificationRow {
+  nomorRm: string | null;
+}
+
 /**
  * Sinkronisasi notifikasi secara pasif
  * Dipanggil ketika aplikasi di-load atau user membuka area tertentu.
@@ -92,9 +96,26 @@ export async function getNotifications(): Promise<NotificationRow[]> {
   return result;
 }
 
+export async function getNotificationsWithRm(): Promise<NotificationRowWithRm[]> {
+  const db = await getDb();
+  const result = await db.select<NotificationRowWithRm[]>(
+    `SELECT n.id, n.type, n.peminjamanId, n.message, n.isRead, n.createdAt,
+            p.nomorRm
+     FROM notifications n
+     LEFT JOIN peminjaman p ON n.peminjamanId = p.id
+     ORDER BY n.isRead ASC, n.createdAt DESC`
+  );
+  return result;
+}
+
 export async function markAsRead(id: number): Promise<void> {
   const db = await getDb();
   await db.execute(`UPDATE notifications SET isRead = 1 WHERE id = $1`, [id]);
+}
+
+export async function markAllAsRead(): Promise<void> {
+  const db = await getDb();
+  await db.execute(`UPDATE notifications SET isRead = 1 WHERE isRead = 0`);
 }
 
 export async function getUnreadCount(): Promise<number> {

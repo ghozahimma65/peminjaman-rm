@@ -1,5 +1,5 @@
 import { getDb } from "./index";
-import { calculateEffectiveStatus } from "../statusHelper";
+import { isOverdue } from "../statusHelper";
 
 export interface PeminjamanRow {
   id?: number;
@@ -64,10 +64,11 @@ export async function createPeminjaman(data: Omit<PeminjamanRow, 'id' | 'created
 
 export async function getAllPeminjaman(): Promise<PeminjamanRow[]> {
   const db = await getDb();
-  const rows = await db.select<(PeminjamanRow & { tanggalBerkasKembali?: string | null; operatorName?: string })[]>(
+  const rows = await db.select<(PeminjamanRow & { pengembalianId?: number | null; tanggalBerkasKembali?: string | null; operatorName?: string })[]>(
     `SELECT p.id, p.tanggalPinjam, p.tanggalBerkasKeluar, p.peminjamId, p.namaPeminjam,
       p.unit, p.nomorRm, p.namaPasien, p.jilid, p.catatan,
       p.createdAt, p.updatedAt,
+      pg.id as pengembalianId,
       pg.tanggalBerkasKembali,
       u.name as operatorName
      FROM peminjaman p
@@ -79,7 +80,11 @@ export async function getAllPeminjaman(): Promise<PeminjamanRow[]> {
   return rows.map(r => ({
     ...r,
     peminjamName: r.namaPeminjam || r.operatorName || 'Petugas',
-    status: calculateEffectiveStatus(r.tanggalBerkasKeluar, r.tanggalPinjam, r.tanggalBerkasKembali)
+    status: (r.pengembalianId != null || r.tanggalBerkasKembali != null)
+      ? "DIKEMBALIKAN"
+      : isOverdue(r.tanggalBerkasKeluar, r.tanggalPinjam, null)
+      ? "TERLAMBAT"
+      : "DIPINJAM"
   }));
 }
 

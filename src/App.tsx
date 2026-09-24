@@ -19,6 +19,7 @@ import { RiwayatRm } from "./pages/riwayat/RiwayatRm";
 import { MasterDataRm } from "./pages/data-rm/MasterDataRm";
 import { Profil } from "./pages/profil/Profil";
 import { Laporan } from "./pages/laporan/Laporan";
+import { SemuaNotifikasi } from "./pages/notifikasi/SemuaNotifikasi";
 
 import { initializeDatabase } from "./lib/database";
 import { runSmokeTest } from "./lib/database/smokeTest";
@@ -125,6 +126,8 @@ function AppContent() {
 
       case "rekap-peminjaman":
         return <Laporan />;
+      case "semua-notifikasi":
+        return <SemuaNotifikasi onNavigate={handleNavigate} />;
       case "profil":
         return <Profil />;
       case "log-login":

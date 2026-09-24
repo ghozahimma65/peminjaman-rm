@@ -4,7 +4,7 @@ import { MenuItem } from "../types";
 
 interface SidebarProps {
   activePage: string;
-  setActivePage: (page: string) => void;
+  setActivePage: (page: string, nomorRm?: string) => void;
   visibleMenuItems: MenuItem[];
   onLogoutClick: () => void;
 }
