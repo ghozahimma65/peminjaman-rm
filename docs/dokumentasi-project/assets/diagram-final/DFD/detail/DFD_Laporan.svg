@@ -80,8 +80,8 @@
       <rect x="330" y="430" width="250" height="65" rx="16" fill="#f0fdf4" stroke="#056839" stroke-width="2" filter="url(#shadow_proc_330_430)"/>
       <path d="M 330 446 A 16 16 0 0 1 346 430 L 564 430 A 16 16 0 0 1 580 446 L 580 456 L 330 456 Z" fill="#056839"/>
       <text x="455.0" y="448" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES 6.4</text>
-      <text x="455.0" y="470.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Penyusunan Format Excel & PDF</text>
-      <text x="455.0" y="485.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">ExcelJS & jsPDF autotable</text>
+      <text x="455.0" y="470.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Penyusunan Format Excel &amp; PDF</text>
+      <text x="455.0" y="485.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">ExcelJS &amp; jsPDF autotable</text>
     </g>
     
     <g class="dfd-datastore">
@@ -206,7 +206,7 @@
       <polygon points="880,430 874,426 874,434" fill="#059669" transform="rotate(-5.710593137499642, 880, 430)"/>
       
         <rect x="602.1" y="436" width="255.8" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="730" y="449" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Tulis Berkas Excel (.xlsx) & PDF (.pdf)</text>
+        <text x="730" y="449" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Tulis Berkas Excel (.xlsx) &amp; PDF (.pdf)</text>
         
     </g>
     

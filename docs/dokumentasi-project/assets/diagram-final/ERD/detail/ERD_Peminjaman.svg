@@ -27,7 +27,7 @@
       <!-- Header -->
       <path d="M 60 96 A 6 6 0 0 1 66 90 L 364 90 A 6 6 0 0 1 370 96 L 370 132 L 60 132 Z" fill="#056839"/>
       <text x="74" y="110" font-size="14" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff">users</text>
-      <text x="74" y="124" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#bbf7d0">Data Akun & Hak Akses Pengguna</text>
+      <text x="74" y="124" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#bbf7d0">Data Akun &amp; Hak Akses Pengguna</text>
       <line x1="60" y1="132" x2="370" y2="132" stroke="#04522d" stroke-width="1.5"/>
       
         <rect x="60" y="132" width="310" height="24" fill="#f8fafc"/>
@@ -98,7 +98,7 @@
       <!-- Header -->
       <path d="M 60 386 A 6 6 0 0 1 66 380 L 364 380 A 6 6 0 0 1 370 386 L 370 422 L 60 422 Z" fill="#056839"/>
       <text x="74" y="400" font-size="14" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff">data_rm</text>
-      <text x="74" y="414" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#bbf7d0">Master Data Rekam Medis & Pasien</text>
+      <text x="74" y="414" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#bbf7d0">Master Data Rekam Medis &amp; Pasien</text>
       <line x1="60" y1="422" x2="370" y2="422" stroke="#04522d" stroke-width="1.5"/>
       
         <rect x="60" y="422" width="310" height="24" fill="#f8fafc"/>

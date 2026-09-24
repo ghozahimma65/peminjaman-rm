@@ -37,7 +37,7 @@
       <path d="M 330 126 A 16 16 0 0 1 346 110 L 564 110 A 16 16 0 0 1 580 126 L 580 136 L 330 136 Z" fill="#056839"/>
       <text x="455.0" y="128" font-size="11" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PROSES Audit 1</text>
       <text x="455.0" y="150.5" font-size="12" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" fill="#064e3b" text-anchor="middle">Pencarian Riwayat Global</text>
-      <text x="455.0" y="165.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">Filter Keyword & Pagination 10</text>
+      <text x="455.0" y="165.5" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" fill="#047857" text-anchor="middle">Filter Keyword &amp; Pagination 10</text>
     </g>
     
     <g class="dfd-process">
@@ -156,7 +156,7 @@
       <polygon points="710,132 704,128 704,136" fill="#0284c7" transform="rotate(-39.71875937155489, 710, 132)"/>
       
         <rect x="545.0" y="176" width="200.0" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="645" y="189" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Ambil Nama Operator & Penerima</text>
+        <text x="645" y="189" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Ambil Nama Operator &amp; Penerima</text>
         
     </g>
     
@@ -183,7 +183,7 @@
       <polygon points="710,402 704,398 704,406" fill="#0284c7" transform="rotate(41.98721249581666, 710, 402)"/>
       
         <rect x="541.9" y="336" width="206.20000000000002" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="645" y="349" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Ambil Tanggal Kembali & Kondisi</text>
+        <text x="645" y="349" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Ambil Tanggal Kembali &amp; Kondisi</text>
         
     </g>
     
@@ -201,7 +201,7 @@
       <polygon points="240,310 234,306 234,314" fill="#059669" transform="rotate(-142.12501634890182, 240, 310)"/>
       
         <rect x="154.0" y="336" width="262.0" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="285" y="349" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Daftar Riwayat Kronologis & Badge Status</text>
+        <text x="285" y="349" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Daftar Riwayat Kronologis &amp; Badge Status</text>
         
     </g>
     

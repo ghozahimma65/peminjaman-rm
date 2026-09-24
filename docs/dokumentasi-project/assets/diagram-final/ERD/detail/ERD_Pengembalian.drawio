@@ -1,6 +1,6 @@
 <mxfile host="Electron" version="21.0.0">
   <diagram id="Page-1" name="Page-1">
-    <mxGraphModel dx="980" dy="680" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="980" pageHeight="680" background="#ffffff">
+    <mxGraphModel dx="980" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="980" pageHeight="720" background="#ffffff">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -47,7 +47,7 @@
           <mxGeometry y="324" width="340" height="24" as="geometry"/>
         </mxCell>
         <mxCell id="pengembalian_tbl" value="pengembalian" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#056839;fontColor=#ffffff;strokeColor=#04522d;rounded=1;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="560" y="90" width="330" height="228" as="geometry"/>
+          <mxGeometry x="560" y="80" width="330" height="252" as="geometry"/>
         </mxCell>
         <mxCell id="pengembalian_tbl_row_0" value="[PK] id : INTEGER" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="pengembalian_tbl">
           <mxGeometry y="36" width="330" height="24" as="geometry"/>
@@ -67,14 +67,17 @@
         <mxCell id="pengembalian_tbl_row_5" value="kondisiBerkas : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="pengembalian_tbl">
           <mxGeometry y="156" width="330" height="24" as="geometry"/>
         </mxCell>
-        <mxCell id="pengembalian_tbl_row_6" value="createdAt : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="pengembalian_tbl">
+        <mxCell id="pengembalian_tbl_row_6" value="catatanPengembalian : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="pengembalian_tbl">
           <mxGeometry y="180" width="330" height="24" as="geometry"/>
         </mxCell>
-        <mxCell id="pengembalian_tbl_row_7" value="updatedAt : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="pengembalian_tbl">
+        <mxCell id="pengembalian_tbl_row_7" value="createdAt : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="pengembalian_tbl">
           <mxGeometry y="204" width="330" height="24" as="geometry"/>
         </mxCell>
+        <mxCell id="pengembalian_tbl_row_8" value="updatedAt : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="pengembalian_tbl">
+          <mxGeometry y="228" width="330" height="24" as="geometry"/>
+        </mxCell>
         <mxCell id="users_tbl" value="users" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#056839;fontColor=#ffffff;strokeColor=#04522d;rounded=1;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="560" y="360" width="310" height="252" as="geometry"/>
+          <mxGeometry x="560" y="405" width="310" height="252" as="geometry"/>
         </mxCell>
         <mxCell id="users_tbl_row_0" value="[PK] id : INTEGER" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
           <mxGeometry y="36" width="310" height="24" as="geometry"/>
@@ -103,17 +106,16 @@
         <mxCell id="users_tbl_row_8" value="updatedAt : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="users_tbl">
           <mxGeometry y="228" width="310" height="24" as="geometry"/>
         </mxCell>
-        <mxCell id="edge_p_pg" value="FK: peminjamanId (UNIQUE 1:1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="peminjaman_tbl" target="pengembalian_tbl">
+        <mxCell id="edge_p_pg" value="FK: peminjamanId (UNIQUE 1:1, RESTRICT)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.259;exitDx=0;exitDy=0;entryX=0;entryY=0.31;entryDx=0;entryDy=0;strokeColor=#2563eb;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="peminjaman_tbl" target="pengembalian_tbl">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="400" y="200" as="exitPoint"/>
-            <mxPoint x="560" y="140" as="entryPoint"/>
+            <Array as="points">
+              <mxPoint x="480" y="200"/>
+              <mxPoint x="480" y="158"/>
+            </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge_u_pg" value="FK: dikembalikanOlehId (1:N)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="users_tbl" target="pengembalian_tbl">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="720" y="360" as="exitPoint"/>
-            <mxPoint x="720" y="305" as="entryPoint"/>
-          </mxGeometry>
+        <mxCell id="edge_u_pg" value="FK: dikembalikanOlehId (1:N, RESTRICT)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.47;entryY=1;entryDx=0;entryDy=0;strokeColor=#2563eb;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="users_tbl" target="pengembalian_tbl">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>

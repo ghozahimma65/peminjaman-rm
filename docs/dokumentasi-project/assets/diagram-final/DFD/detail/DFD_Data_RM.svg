@@ -97,7 +97,7 @@
       <polygon points="330,142 324,138 324,146" fill="#2563eb" transform="rotate(0.0, 330, 142)"/>
       
         <rect x="186.2" y="166" width="187.6" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="280" y="179" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Input Identitas Pasien & NIK</text>
+        <text x="280" y="179" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Input Identitas Pasien &amp; NIK</text>
         
     </g>
     
@@ -151,7 +151,7 @@
       <polygon points="240,310 234,306 234,314" fill="#059669" transform="rotate(-142.12501634890182, 240, 310)"/>
       
         <rect x="181.89999999999998" y="336" width="206.20000000000002" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="285" y="349" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Master RM & Status Fisik di Rak</text>
+        <text x="285" y="349" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Master RM &amp; Status Fisik di Rak</text>
         
     </g>
     

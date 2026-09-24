@@ -177,7 +177,7 @@
       <polygon points="330,350 324,346 324,354" fill="#2563eb" transform="rotate(0.0, 330, 350)"/>
       
         <rect x="194.3" y="331" width="181.4" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="285" y="344" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Input Unit Ruang & Peminjam</text>
+        <text x="285" y="344" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Input Unit Ruang &amp; Peminjam</text>
         
     </g>
     

@@ -2,79 +2,77 @@
   <diagram id="Page-1" name="Page-1">
     <mxGraphModel dx="940" dy="560" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="940" pageHeight="560" background="#ffffff">
       <root>
-        <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
         <mxCell id="data_rm_tbl" value="data_rm" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#056839;fontColor=#ffffff;strokeColor=#04522d;rounded=1;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="80" y="110" width="320" height="204" as="geometry"/>
+          <mxGeometry x="80" y="110" width="320" height="204" as="geometry" />
         </mxCell>
         <mxCell id="data_rm_tbl_row_0" value="[PK] nomorRm : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="data_rm_tbl">
-          <mxGeometry y="36" width="320" height="24" as="geometry"/>
+          <mxGeometry y="36" width="320" height="24" as="geometry" />
         </mxCell>
         <mxCell id="data_rm_tbl_row_1" value="namaPasien : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="data_rm_tbl">
-          <mxGeometry y="60" width="320" height="24" as="geometry"/>
+          <mxGeometry y="60" width="320" height="24" as="geometry" />
         </mxCell>
         <mxCell id="data_rm_tbl_row_2" value="nik : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="data_rm_tbl">
-          <mxGeometry y="84" width="320" height="24" as="geometry"/>
+          <mxGeometry y="84" width="320" height="24" as="geometry" />
         </mxCell>
         <mxCell id="data_rm_tbl_row_3" value="jenisKelamin : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="data_rm_tbl">
-          <mxGeometry y="108" width="320" height="24" as="geometry"/>
+          <mxGeometry y="108" width="320" height="24" as="geometry" />
         </mxCell>
         <mxCell id="data_rm_tbl_row_4" value="tanggalLahir : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="data_rm_tbl">
-          <mxGeometry y="132" width="320" height="24" as="geometry"/>
+          <mxGeometry y="132" width="320" height="24" as="geometry" />
         </mxCell>
         <mxCell id="data_rm_tbl_row_5" value="alamat : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="data_rm_tbl">
-          <mxGeometry y="156" width="320" height="24" as="geometry"/>
+          <mxGeometry y="156" width="320" height="24" as="geometry" />
         </mxCell>
         <mxCell id="data_rm_tbl_row_6" value="createdAt : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="data_rm_tbl">
-          <mxGeometry y="180" width="320" height="24" as="geometry"/>
+          <mxGeometry y="180" width="320" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl" value="peminjaman" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#056839;fontColor=#ffffff;strokeColor=#04522d;rounded=1;arcSize=4;" vertex="1" parent="1">
-          <mxGeometry x="540" y="110" width="330" height="348" as="geometry"/>
+          <mxGeometry x="540" y="110" width="330" height="348" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_0" value="[PK] id : INTEGER" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="36" width="330" height="24" as="geometry"/>
+          <mxGeometry y="36" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_1" value="tanggalPinjam : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="60" width="330" height="24" as="geometry"/>
+          <mxGeometry y="60" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_2" value="tanggalBerkasKeluar : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="84" width="330" height="24" as="geometry"/>
+          <mxGeometry y="84" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_3" value="[FK] peminjamId : INTEGER" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="108" width="330" height="24" as="geometry"/>
+          <mxGeometry y="108" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_4" value="namaPeminjam : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="132" width="330" height="24" as="geometry"/>
+          <mxGeometry y="132" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_5" value="unit : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="156" width="330" height="24" as="geometry"/>
+          <mxGeometry y="156" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_6" value="[FK] nomorRm : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="180" width="330" height="24" as="geometry"/>
+          <mxGeometry y="180" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_7" value="namaPasien : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="204" width="330" height="24" as="geometry"/>
+          <mxGeometry y="204" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_8" value="jilid : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="228" width="330" height="24" as="geometry"/>
+          <mxGeometry y="228" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_9" value="catatan : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="252" width="330" height="24" as="geometry"/>
+          <mxGeometry y="252" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_10" value="status : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="276" width="330" height="24" as="geometry"/>
+          <mxGeometry y="276" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_11" value="createdAt : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="300" width="330" height="24" as="geometry"/>
+          <mxGeometry y="300" width="330" height="24" as="geometry" />
         </mxCell>
         <mxCell id="peminjaman_tbl_row_12" value="updatedAt : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;fontColor=#0f172a;fontSize=11;" vertex="1" parent="peminjaman_tbl">
-          <mxGeometry y="324" width="330" height="24" as="geometry"/>
+          <mxGeometry y="324" width="330" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="edge_rm_pinjam" value="FK: nomorRm (1:N)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="data_rm_tbl" target="peminjaman_tbl">
+        <mxCell id="edge_rm_pinjam" value="FK: nomorRm (1:N)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.485;exitDx=0;exitDy=0;entryX=0;entryY=0.485;entryDx=0;entryDy=0;strokeColor=#2563eb;strokeWidth=2;fontSize=10;fontColor=#1e293b;" edge="1" parent="1" source="data_rm_tbl" target="peminjaman_tbl">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="400" y="150" as="exitPoint"/>
-            <mxPoint x="540" y="270" as="entryPoint"/>
-          </mxGeometry>
+            <Array as="points"><mxPoint x="470" y="150" /><mxPoint x="470" y="270" /></Array></mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

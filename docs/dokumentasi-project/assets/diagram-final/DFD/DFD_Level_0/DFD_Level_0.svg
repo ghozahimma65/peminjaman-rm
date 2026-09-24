@@ -76,7 +76,7 @@
       <polygon points="430,275 424,271 424,279" fill="#2563eb" transform="rotate(0.0, 430, 275)"/>
       
         <rect x="215.2" y="256" width="249.6" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="340" y="269" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">2. Data Registrasi Pasien & Peminjaman</text>
+        <text x="340" y="269" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">2. Data Registrasi Pasien &amp; Peminjaman</text>
         
     </g>
     
@@ -103,7 +103,7 @@
       <polygon points="250,380 244,376 244,384" fill="#d97706" transform="rotate(180.0, 250, 380)"/>
       
         <rect x="209.0" y="381" width="262.0" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="340" y="394" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">5. Notifikasi Peringatan (24h & Overdue)</text>
+        <text x="340" y="394" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">5. Notifikasi Peringatan (24h &amp; Overdue)</text>
         
     </g>
     
@@ -112,7 +112,7 @@
       <polygon points="690,230 684,226 684,234" fill="#2563eb" transform="rotate(153.434948822922, 690, 230)"/>
       
         <rect x="656.4" y="166" width="237.20000000000002" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="775" y="179" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Kredensial Super Admin & Request Log</text>
+        <text x="775" y="179" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Kredensial Super Admin &amp; Request Log</text>
         
     </g>
     
@@ -139,7 +139,7 @@
       <polygon points="870,465 864,461 864,469" fill="#059669" transform="rotate(21.25050550713324, 870, 465)"/>
       
         <rect x="642.8" y="431" width="274.40000000000003" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-        <text x="780" y="444" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Dokumen Laporan Excel (.xlsx) & PDF (.pdf)</text>
+        <text x="780" y="444" font-size="9.5" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" fill="#1e293b" text-anchor="middle">Dokumen Laporan Excel (.xlsx) &amp; PDF (.pdf)</text>
         
     </g>
     
