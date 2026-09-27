@@ -4,7 +4,7 @@
 
 ## Gambaran DFD Level 1
 
-DFD Level 1 mendekomposisi proses utama sistem filing menjadi **7 sub-proses fungsional**, menunjukkan secara transparan bagaimana data dipertukarkan antara entitas eksternal, proses pengolahan, dan 6 data store logis.
+DFD Level 1 mendekomposisi proses utama sistem filing menjadi **7 sub-proses fungsional**, menunjukkan secara transparan bagaimana data dipertukarkan antara entitas eksternal (**Admin / Petugas** dengan hak akses tunggal dan **File System OS**), proses pengolahan, dan 6 data store logis tanpa adanya entitas terpisah Super Admin.
 
 ---
 
@@ -13,9 +13,8 @@ DFD Level 1 mendekomposisi proses utama sistem filing menjadi **7 sub-proses fun
 ```mermaid
 flowchart TD
     %% Entitas Eksternal
-    E1["Petugas Rekam Medis"]
-    E2["Super Admin"]
-    E3["File System (OS)"]
+    E1["Admin / Petugas"]
+    E2["File System (OS)"]
 
     %% Data Stores
     D1[("D1: users")]
@@ -36,12 +35,10 @@ flowchart TD
 
     %% Aliran Proses 1.0 (Autentikasi)
     E1 -->|"Kredensial Login (NIP, Password)"| P1
-    E2 -->|"Kredensial Super Admin"| P1
     P1 -->|"Data Verifikasi User"| D1
     D1 -->|"Password Hash, Role"| P1
     P1 -->|"Pencatatan Log Login"| D2
     P1 -->|"Objek Sesi Pengguna"| E1
-    P1 -->|"Objek Sesi Super Admin"| E2
 
     %% Aliran Proses 2.0 (Master Data RM)
     E1 -->|"Data Pasien Baru, Keyword Cari"| P2
@@ -80,16 +77,15 @@ flowchart TD
     D5 -->|"Data Pengembalian"| P6
     D1 -->|"Nama Petugas Pelapor"| P6
     P6 -->|"Tabel Ringkasan Rekapitulasi"| E1
-    P6 -->|"File Excel .xlsx & PDF .pdf"| E3
+    P6 -->|"File Excel .xlsx & PDF .pdf"| E2
 
     %% Aliran Proses 7.0 (Profil & Audit)
-    E1 -->|"Update Nama, Email, Password, Avatar"| P7
-    E3 -->|"File Binary Foto Avatar"| P7
+    E1 -->|"Update Nama, Email, Password, Avatar & Request Log"| P7
+    E2 -->|"File Binary Foto Avatar"| P7
     P7 -->|"Update User, Hash Baru, Avatar Path"| D1
-    P7 -->|"Simpan File Avatar ke AppData"| E3
-    E2 -->|"Permintaan Log Audit"| P7
+    P7 -->|"Simpan File Avatar ke AppData"| E2
     D2 -->|"Data Riwayat Login"| P7
-    P7 -->|"Tabel Log Audit Login"| E2
+    P7 -->|"Tabel Log Audit & Status Profil"| E1
 ```
 
 ---
@@ -97,16 +93,16 @@ flowchart TD
 ## Deskripsi Rinci Sub-Proses
 
 ### Proses 1.0: Autentikasi & Manajemen Sesi
-- **Tujuan**: Memverifikasi identitas pengguna, mengamankan hak akses, dan mencatat riwayat masuk ke sistem.
-- **Input**: NIP dan password teks polos.
+- **Tujuan**: Memverifikasi identitas pengguna tunggal (Admin / Petugas), mengamankan hak akses, dan mencatat riwayat masuk ke sistem.
+- **Input**: NIP dan password teks polos dari Admin / Petugas.
 - **Penyimpanan Terlibat**: Membaca `D1: users`, menulis log percobaan ke `D2: login_logs`.
-- **Output**: Sesi pengguna terotentikasi berisi ID, NIP, Nama, dan Peran (*Role*).
+- **Output**: Sesi pengguna terotentikasi berisi ID, NIP, Nama, dan Peran (*Role: Admin/Petugas*).
 
 ### Proses 2.0: Manajemen Data RM & Pasien
 - **Tujuan**: Mendaftarkan identitas pasien baru, memvalidasi NIK 16 digit, dan menampilkan daftar master rekam medis beserta status ketersediaan fisiknya.
 - **Input**: Nomor RM, NIK, Nama Pasien, Jenis Kelamin, Tanggal Lahir, Alamat.
 - **Penyimpanan Terlibat**: Menulis dan membaca `D3: data_rm`, membaca `D4: peminjaman` untuk menghitung total peminjaman dan ketersediaan berkas.
-- **Output**: Daftar master RM teragregasi dan ringkasan metrik statistik.
+- **Output**: Daftar master RM teragregasi dan ringkasan metrik statistik ke Admin / Petugas.
 
 ### Proses 3.0: Pengelolaan Peminjaman Berkas RM
 - **Tujuan**: Memvalidasi ketersediaan fisik berkas (memastikan berkas tidak sedang dipinjam oleh ruangan lain) dan mencatat transaksi peminjaman baru.
@@ -124,16 +120,16 @@ flowchart TD
 - **Tujuan**: Melakukan sinkronisasi waktu pasif terhadap batas waktu 48 jam, membersihkan notifikasi berkas yang telah kembali, dan memicu peringatan REMINDER ($\le$ 24 jam) atau TERLAMBAT ($> 48$ jam).
 - **Input**: Timestamp waktu berjalan sistem komputer.
 - **Penyimpanan Terlibat**: Membaca `D4: peminjaman` & `D5: pengembalian`, memutakhirkan status peminjaman pada `D4: peminjaman`, mengelola baris antrean pada `D6: notifications`.
-- **Output**: Tampilan badge lonceng belum dibaca dan daftar pesan pengingat di antarmuka pengguna.
+- **Output**: Tampilan badge lonceng belum dibaca dan daftar pesan pengingat di antarmuka Admin / Petugas.
 
 ### Proses 6.0: Pengolahan Laporan & Ekspor Dokumen
 - **Tujuan**: Menghasilkan rekapitulasi kepatuhan peminjaman per ruangan dan mengekspor dokumen resmi bertanda tangan.
 - **Input**: Parameter filter rentang tanggal, unit ruangan, dan status berkas.
 - **Penyimpanan Terlibat**: Membaca data relasi dari `D4: peminjaman`, `D5: pengembalian`, dan `D1: users`.
-- **Output**: Tampilan tabel rekapitulasi di layar, file Microsoft Excel (`.xlsx`), dan dokumen cetak Adobe PDF (`.pdf`) yang tersimpan di media penyimpanan pengguna (`E3: File System`).
+- **Output**: Tampilan tabel rekapitulasi di layar Admin / Petugas, serta file Microsoft Excel (`.xlsx`) dan dokumen cetak Adobe PDF (`.pdf`) yang tersimpan di media penyimpanan pengguna (`E2: File System`).
 
 ### Proses 7.0: Manajemen Profil & Audit Log
-- **Tujuan**: Mengelola informasi akun pengguna, fasilitas ubah kata sandi, penyimpanan avatar ke folder lokal aplikasi, serta penyajian riwayat audit log bagi Super Admin.
-- **Input**: Data profil baru, password lama & baru, file gambar profil, filter log.
-- **Penyimpanan Terlibat**: Memperbarui `D1: users`, membaca `D2: login_logs`, membaca/menulis file fisik di `E3: File System`.
-- **Output**: Profil terbarui dan tabel rekapitulasi audit login.
+- **Tujuan**: Mengelola informasi akun pengguna, fasilitas ubah kata sandi, penyimpanan avatar ke folder lokal aplikasi, serta penyajian riwayat audit log aktivitas bagi Admin / Petugas.
+- **Input**: Data profil baru, password lama & baru, file gambar profil, filter log audit.
+- **Penyimpanan Terlibat**: Memperbarui `D1: users`, membaca `D2: login_logs`, membaca/menulis file fisik di `E2: File System`.
+- **Output**: Profil pengguna terbarui dan tabel rekapitulasi riwayat login sistem.
